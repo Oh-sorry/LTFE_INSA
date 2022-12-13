@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pg301100Sql">
+
+	<select id="selectPg309501GbnList" parameterType="com.mcst.dto.gbn30.pg301100Dto" resultType="com.mcst.dto.gbn30.pg301100Dto">
+		SELECT MENU_ID,MENU_NM,MENU_SRC,MENU_GUBN1,MENU_GUBN2,MENU_GUBN3,USED_GUBN,INST_DATE,MENU_FORDER,MENU_SEQ
+		  FROM USR200T
+         WHERE MENU_GUBN2 = '00'
+           AND USED_GUBN = 'Y'
+        ORDER BY MENU_GUBN1
+	</select>
+
+	<select id="selectpg301100List" parameterType="com.mcst.dto.gbn30.pg301100Dto" resultType="com.mcst.dto.gbn30.pg301100Dto">
+		SELECT MENU_ID,MENU_NM,MENU_SRC,MENU_GUBN1,MENU_GUBN2,MENU_GUBN3,USED_GUBN,INST_DATE,MENU_FORDER,MENU_SEQ
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{searchMenuGubn1}
+           AND MENU_GUBN2 != '00'
+        ORDER BY MENU_SEQ
+	</select>
+
+	<select id="selectPg309501GbnName" parameterType="com.mcst.dto.gbn30.pg301100Dto" resultType="com.mcst.dto.gbn30.pg301100Dto">
+		SELECT MENU_ID,MENU_NM,MENU_SRC,MENU_GUBN1,MENU_GUBN2,MENU_GUBN3,USED_GUBN,INST_DATE,MENU_FORDER,MENU_SEQ
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{menuGubn1}
+           AND MENU_GUBN2 = '00'
+        ORDER BY MENU_GUBN1
+	</select>
+
+	<select id="selectpg301100Info" parameterType="com.mcst.dto.gbn30.pg301100Dto" resultType="com.mcst.dto.gbn30.pg301100Dto">
+		SELECT MENU_ID,MENU_NM,MENU_SRC,MENU_GUBN1,MENU_GUBN2,MENU_GUBN3,USED_GUBN,INST_DATE,MENU_FORDER,MENU_SEQ
+		  FROM USR200T
+         WHERE MENU_ID = #{menuId}
+	</select>
+
+	<select id="selectpg301100MenuId" parameterType="com.mcst.dto.gbn30.pg301100Dto" resultType="java.lang.String">
+		SELECT #{menuGubn1}||RTRIM(TO_CHAR(NVL(MAX(SUBSTR(MENU_ID,3,4)),0) + 1,'0009'))
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{menuGubn1}
+           AND MENU_GUBN2 != '00'
+	</select>
+
+	<update id="updatepg301100" parameterType="com.mcst.dto.db.usr200tDto">
+		MERGE INTO USR200T A
+		USING DUAL
+		ON (A.MENU_ID = #{menuId})
+		WHEN MATCHED THEN
+			UPDATE SET A.MENU_NM = #{menuNm}, A.MENU_SRC = #{menuSrc}, A.USED_GUBN = #{usedGubn}, A.MENU_SEQ = #{menuSeq}
+		WHEN NOT MATCHED THEN
+			INSERT (A.MENU_ID, A.MENU_NM, A.MENU_SRC, A.MENU_GUBN1, A.MENU_GUBN2, A.MENU_GUBN3, A.USED_GUBN, A.INST_DATE, A.MENU_FORDER, A.MENU_SEQ)
+			VALUES(#{menuId}, #{menuNm}, #{menuSrc}, #{menuGubn1}, '99', '00', #{usedGubn}, SYSDATE, '', #{menuSeq})
+	</update>
+
+	<delete id="deletepg301100" parameterType="com.mcst.dto.gbn30.pg301100Dto">
+		DELETE
+		  FROM USR200T
+         WHERE MENU_ID = #{menuId}
+	</delete>
+
+</mapper>

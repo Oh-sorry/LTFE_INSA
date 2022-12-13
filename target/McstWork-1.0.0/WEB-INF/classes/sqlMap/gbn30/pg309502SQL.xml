@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pg309502Sql">
+
+	<select id="selectPg309502List" parameterType="com.mcst.dto.gbn30.pg309502Dto" resultType="com.mcst.dto.gbn30.pg309502Dto">
+		SELECT A.PERN_NUM
+		     , B.NAME
+		     , DECODE(TO_CHAR(MAX(DECODE(SUBSTR(A.MENU_ID,1,2),'10',NVL(A.MENU_AUTH, 0),0))),'1','쓰기','2','읽기','') MENU_AUTH_10
+		     , DECODE(TO_CHAR(MAX(DECODE(SUBSTR(A.MENU_ID,1,2),'20',NVL(A.MENU_AUTH, 0),0))),'1','쓰기','2','읽기','') MENU_AUTH_20
+		     , DECODE(TO_CHAR(MAX(DECODE(SUBSTR(A.MENU_ID,1,2),'21',NVL(A.MENU_AUTH, 0),0))),'1','쓰기','2','읽기','') MENU_AUTH_21
+		     , DECODE(TO_CHAR(MAX(DECODE(SUBSTR(A.MENU_ID,1,2),'23',NVL(A.MENU_AUTH, 0),0))),'1','쓰기','2','읽기','') MENU_AUTH_23
+		     , DECODE(TO_CHAR(MAX(DECODE(SUBSTR(A.MENU_ID,1,2),'24',NVL(A.MENU_AUTH, 0),0))),'1','쓰기','2','읽기','') MENU_AUTH_24
+		     , DECODE(TO_CHAR(MAX(DECODE(SUBSTR(A.MENU_ID,1,2),'26',NVL(A.MENU_AUTH, 0),0))),'1','쓰기','2','읽기','') MENU_AUTH_26
+		     , DECODE(TO_CHAR(MAX(DECODE(SUBSTR(A.MENU_ID,1,2),'27',NVL(A.MENU_AUTH, 0),0))),'1','쓰기','2','읽기','') MENU_AUTH_27
+		     , DECODE(TO_CHAR(MAX(DECODE(SUBSTR(A.MENU_ID,1,2),'30',NVL(A.MENU_AUTH, 0),0))),'1','쓰기','2','읽기','') MENU_AUTH_30
+		  FROM USR400T A, HPA100T B
+		 WHERE A.PERN_NUM = B.PERN_NO
+		GROUP BY PERN_NUM
+		ORDER BY PERN_NUM
+	</select>
+
+	<select id="selectPg309502Info" parameterType="com.mcst.dto.gbn30.pg309502Dto" resultType="com.mcst.dto.gbn30.pg309502Dto">
+			 SELECT A.PERN_NUM
+			      , A.NAME
+		    	  , C.MENU_ID
+		    	  , C.MENU_NM
+		    	  , A.MENU_AUTH
+		     FROM (SELECT A1.PERN_NUM, A2.NAME, A1.MENU_ID, NVL(A1.MENU_AUTH, 0) MENU_AUTH
+		             FROM USR400T A1, HPA100T A2
+		            WHERE A1.PERN_NUM = #{pernNum} AND A1.PERN_NUM = A2.PERN_NO) A
+		        , USR200T C
+		    WHERE C.MENU_ID = A.MENU_ID (+)
+		      AND C.MENU_GUBN2 = '00'
+		      AND C.USED_GUBN = 'Y'
+		    ORDER BY C.MENU_ID
+	</select>
+
+	<select id="selectPg309502Check" parameterType="com.mcst.dto.gbn30.pg309502Dto" resultType="java.lang.Integer">
+		SELECT COUNT(1) CNT
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{menuGubn1}
+           AND MENU_GUBN2 = '00'
+	</select>
+
+	<update id="updatePg309502" parameterType="com.mcst.dto.db.usr200tDto">
+		MERGE INTO USR200T A
+		USING DUAL
+		ON (A.MENU_ID = CONCAT(#{menuGubn1},'0000'))
+		WHEN MATCHED THEN
+			UPDATE SET A.MENU_NM = #{menuNm}
+		WHEN NOT MATCHED THEN
+			INSERT (A.MENU_ID, A.MENU_NM, A.MENU_SRC, A.MENU_GUBN1, A.MENU_GUBN2, A.MENU_GUBN3, A.USED_GUBN, A.INST_DATE, A.MENU_FORDER, A.MENU_SEQ)
+			VALUES (CONCAT(#{menuGubn1},'0000'), #{menuNm}, '', #{menuGubn1}, '00', '00', 'Y', SYSDATE, '', '0');
+	</update>
+
+	<select id="selectPg309502DelCheck" parameterType="com.mcst.dto.gbn30.pg309502Dto" resultType="java.lang.Integer">
+		SELECT COUNT(1) CNT
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{menuGubn1}
+           AND MENU_GUBN2 != '00'
+	</select>
+
+	<delete id="deletePg309502" parameterType="com.mcst.dto.gbn30.pg309502Dto">
+		DELETE
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{menuGubn1}
+	</delete>
+
+</mapper>

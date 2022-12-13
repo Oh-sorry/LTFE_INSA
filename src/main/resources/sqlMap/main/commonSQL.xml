@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="commonSql">
+
+	<select id="selectSearchName" parameterType="com.mcst.dto.nameSearchDto" resultType="com.mcst.dto.nameSearchDto">
+		SELECT PERN_NO, PERN_NO || ' '|| NAME ||' ('|| NVL(SUBSTR(AESDECRYPT(BIRT_DATE),1,4),'')||'.'||NVL(SUBSTR(AESDECRYPT(BIRT_DATE),5,2),'')||'.'||NVL(SUBSTR(AESDECRYPT(BIRT_DATE),7,2),'')||') '||NVL(DEPT_NAME,'') NAME
+  		  FROM HPA100T USE INDEX(hpa100t_idx01)
+         WHERE (NAME LIKE #{searchName}||'%' OR PERN_NO LIKE #{searchName}||'%')
+	</select>
+
+	<select id="selectPernInfo" parameterType="java.lang.String" resultType="com.mcst.dto.pernInfoDto">
+		SELECT PERN_NO
+		     , NAME
+		     , DEPT_CODE
+		     , DEPT_NAME
+		     , POST_CODE
+		     , PAY_GRADE
+		     , PAY_GRADE2
+		     , JOIN_CODE
+		     , AESDECRYPT(REPRE_NUM) REPRE_NUM
+		     , SEX_CODE
+		     , AESDECRYPT(BIRT_DATE) BIRT_DATE
+		     , BIRT_DATE_TYPE
+		     , JOIN_DATE
+		     , RETR_DATE
+		     , EXPIRE_DATE
+		     , RETR_RESN
+		     , EMPLOY_TYPE
+		     , ZIP_CODE
+		     , AESDECRYPT(KOR_ADDR) KOR_ADDR
+		     , PRSN_ZIP_CODE
+		     , AESDECRYPT(PRSN_KOR_ADDR) PRSN_KOR_ADDR
+		     , AESDECRYPT(TELEPHON) TELEPHON
+		     , AESDECRYPT(EM_TELEPHON) EM_TELEPHON
+		     , AESDECRYPT(PHONE_NO) PHONE_NO
+		     , SCHSHIP_CODE
+		     , GRADU_TYPE
+		     , MARRY_CODE
+		     , AESDECRYPT(EMAIL_ADDR) EMAIL_ADDR
+		     , MARRY_DATE
+		     , AESDECRYPT(WORK_TEL) WORK_TEL
+		     , AESDECRYPT(WORK_TEL_IN) WORK_TEL_IN
+		     , REMARK
+		     , MUTUAL_YN
+		     , CLUB_NUM
+		     , SALARY_CODE
+		     , BANK_CODE
+		     , AESDECRYPT(ACCOUNT_NUMBER) ACCOUNT_NUMBER
+		     , REST_DATE
+		     , REST_RESN
+		     , WAGES_AMT
+		     , WAGES_DATE
+		     , PAY_GRADE_DATE
+		     , PAY_GRADE2_DATE
+		     , SKILL_GRADE
+		     , SKILL_REC_DATE
+		     , SKILL_DELI_DATE
+		     , SKILL_CERTI_NUMBER
+		     , INSUR_DATE
+		     , CAREER_S_DATE
+		     , INSUR_EXP_DATE
+		     , EM_GUBUN
+		     , TOI_KIND
+		     , TOI_DATE
+		     , TOI_BANK
+		     , TOI_PAPER
+			 , AESDECRYPT(ACCOUNT_NUMBER2) ACCOUNT_NUMBER2
+		  FROM HPA100T
+		 WHERE PERN_NO = #{value}
+	</select>
+
+</mapper>

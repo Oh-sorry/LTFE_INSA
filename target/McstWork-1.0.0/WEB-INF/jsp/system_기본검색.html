@@ -1,0 +1,424 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/jquery-ui.css" />
+<script src="js/jquery-1.11.0.min.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/script.js"></script>
+<title>(주)엠씨에스텍 인사급여시스템</title>
+</head>
+<body>
+	<div id="wrap">
+        <div id="header">
+            <h1><img src="images/logo.png" alt="(주)엠씨에스텍"></h1>
+            <div class="top_info">
+                <ul>
+                    <li><b>관리자</b> 님 반갑습니다.</li>
+                    <li><a href="">로그아웃</a></li>
+                    <li><a href="">비밀번호 변경</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="content_wrap">
+            <div id="lnb">
+                <div class="menu_all">
+                    <div class="list">
+                        <ul>
+                            <li>
+                                <a href="">인사관리</a>
+                                <ul>
+                                    <li><a href="#">인사기본정보</a></li>
+                                    <li><a href="#" class="on">기간별 발령내역</a></li>
+                                    <li><a href="#">교육사항</a></li>
+                                    <li><a href="#">기본검색</a></li>
+                                    <li><a href="#">조직도검색</a></li>
+                                    <li><a href="#">조건검색</a></li>
+                                    <li><a href="#">증명서 발급</a></li>
+                                    <li><a href="#">증명서 일괄발송</a></li>
+                                    <li><a href="#">증명서 발행대장</a></li>
+                                    <li><a href="#">경력현황</a></li>
+                                    <li><a href="#">기술자 등급현황</a></li>
+                                    <li><a href="#">비상연락망</a></li>
+                                    <li><a href="#">입/퇴사자 현황</a></li>
+                                    <li><a href="#">보증보험 가입내역</a></li>
+                                    <li><a href="#">근무지별 직원현황</a></li>
+                                    <li><a href="#">월별 근로자 명부</a></li>
+                                    <li><a href="#">통계현황</a></li>
+                                    <li><a href="#">월별 근태관리</a></li>
+                                    <li><a href="#">기간별 근태현황</a></li>
+                                    <li><a href="#">개인별 첨부서류 조회</a></li>
+                                    <li><a href="#">연차현황</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">급여관리</a>
+                                <ul>
+                                    <li><a href="#">월급제 급여기준</a></li>
+                                    <li><a href="#">연봉제 급여기준</a></li>
+                                    <li><a href="#">갑근세 요율관리</a></li>
+                                    <li><a href="#">국민연금 관리</a></li>
+                                    <li><a href="#">급여기준 관리</a></li>
+                                    <li><a href="#">급여 산출</a></li>
+                                    <li><a href="#">퇴직자별 급여 가계산 산출</a></li>
+                                    <li><a href="#">개인별 수당/공제 관리</a></li>
+                                    <li><a href="#">퇴직자 가계산</a>
+                                        <ul>
+                                            <li><a href="">수당/공제관리</a></li>
+                                            <li><a href="">급여산출</a></li>
+                                            <li><a href="">급여지급대장</a></li>
+                                            <li><a href="">소득총액신고</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">퇴직자 건강보험 정산</a></li>
+                                    <li><a href="#">연말 건강보험 정산</a></li>
+                                    <li><a href="#">개인별 급여관리</a></li>
+                                    <li><a href="#">급여지급대장</a></li>
+                                    <li><a href="#">은행용 급여대장</a></li>
+                                    <li><a href="#">수당/공제 지급대장</a></li>
+                                    <li><a href="#">급여명세서 출력</a></li>
+                                    <li><a href="#">급여명세서 발송</a></li>
+                                    <li><a href="#">월별 근로자 명부</a></li>
+                                    <li><a href="#">전월 급여비교내역</a></li>
+                                    <li><a href="#">기간별 전체 급여내역</a></li>
+                                    <li><a href="#">기간별 개인 급여내역</a></li>
+                                    <li><a href="#">퇴직자 소득총액신고</a></li>
+                                    <li><a href="#">연말정산 소득총액신고</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">OP급여관리</a>
+                                <ul>
+                                    <li><a href="#">개인별 지급/공제 관리</a></li>
+                                    <li><a href="#">개인별 수당/공제 관리</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">상여관리</a>
+                                <ul>
+                                    <li><a href="#">정기상여기준 관리</a></li>
+                                    <li><a href="#">개인별 상여관리</a></li>
+                                    <li><a href="#">상여 지급대장</a></li>
+                                    <li><a href="#">상여명세서 출력</a></li>
+                                    <li><a href="#">상여명세서 발송</a></li>
+                                    <li><a href="#">은행용 상여대장</a></li>
+                                    <li><a href="#">기간별 전체 상여내역</a></li>
+                                    <li><a href="#">기간별 개인 상여내역</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">건강보험/상조회</a>
+                                <ul>
+                                    <li><a href="#">상조회 지급내역</a></li>
+                                    <li><a href="#">상조회 은행별 잔액 입력</a></li>
+                                    <li><a href="#">상조회 미가입내역</a></li>
+                                    <li><a href="#">상조회 공제내역</a></li>
+                                    <li><a href="#">상조회 개인별공제내역</a></li>
+                                    <li><a href="#">상조회 공제/지급내역</a></li>
+                                    <li><a href="#">건강보험공단자료</a></li>
+                                    <li><a href="#">건강보험조회</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">급여세액관리</a>
+                                <ul>
+                                    <li><a href="#">세무신고 종합표</a></li>
+                                    <li><a href="#">급여지급대장</a></li>
+                                    <li><a href="#">상여지급대장</a></li>
+                                    <li><a href="#">급여 새액징수 명세서</a></li>
+                                    <li><a href="#">상여 세액징수 명세서</a></li>
+                                    <li><a href="#">사업소세 신고</a></li>
+                                    <li><a href="#">월별 건강/국민연금내역</a></li>
+                                    <li><a href="#">4대보험 공단 고지보험료 관리</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">퇴직관리</a>
+                                <ul>
+                                    <li><a href="#">퇴직금 처리대상자</a></li>
+                                    <li><a href="#">연봉제 중간정산</a></li>
+                                    <li><a href="#">퇴직금 처리내역</a></li>
+                                    <li><a href="#">퇴직연금 DB형 월별 추계액 내역 1/12</a></li>
+                                    <li><a href="#">퇴직연금 DB형 추계액(퇴직금)</a></li>
+                                    <li><a href="#">퇴직연금 가입자명단</a></li>
+                                    <li><a href="#">퇴직연금 예상금액 산출</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">시스템관리</a>
+                                <ul>
+                                    <li><a href="#">프로그램(구분)관리</a></li>
+                                    <li><a href="#">프로그램(메뉴)관리</a></li>
+                                    <li><a href="#">권한관리</a></li>
+                                    <li><a href="#">코드관리</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="contents">
+				<div class="inner">
+					<div class="path">
+						<div class="inner">
+							<ul>
+								<li><a href="#"><img src="images/ico_home.png" alt="" /></a></li>
+								<li><a href="#">시스템관리</a></li>
+								<li><a href="#">관리자 메뉴 관리</a></li>
+							</ul>
+						</div>
+					</div>
+					<h3>인사기본정보</h3>
+					<div class="search_Area m_b_20">
+                        <div class="s_btn">
+                            <a href="" class="btn_small bt_deep_blue">신입사원 등록</a>
+                            <a href="" class="btn_small bt_deep_blue">사원 삭제</a>
+                            <a href="" class="btn_small bt_deep_blue">기본정보수정</a>
+                        </div>
+
+                        <dl>
+                            <dt>성명</dt>
+                            <dd>
+                                <label></label>
+                                <input type="text">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>사번</dt>
+                            <dd>
+                                <label></label>
+                                <input type="text">
+                                <a href="" class="btn_small bt_grey">검색</a> 
+                            </dd>
+                        </dl>
+                    </div>
+					<div class="section">
+                        <div class="cols_area">
+                            <table class="table table_right_row">
+                                <colgroup>
+                                    <col style="" />
+                                    <col style="width:8%" />
+                                    <col style="width:15%" />
+                                    <col style="width:8%" />
+                                    <col style="width:15%" />
+                                    <col style="width:8%" />
+                                    <col style="width:15%" />
+                                    <col style="width:8%" />
+                                    <col style="width:15%" />
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <td rowspan="5" class="img"><img src="images/sample_photo02.png" alt="증명사진"></td>
+                                        <th>사번/성명</th>
+                                        <td><b>20111115 김태훈</b></td>
+                                        <th>주민번호</th>
+                                        <td>115678-522246 (남)</td>
+                                        <th>입사일자</th>
+                                        <td>2010.07.01</td>
+                                        <th>정식발령일</th>
+                                        <td>2010.07.06</td>
+                                    </tr>
+                                    <tr>
+                                        <th>직급</th>
+                                        <td></td>
+                                        <th>호봉</th>
+                                        <td></td>
+                                        <th>승급일</th>
+                                        <td></td>
+                                        <th>승호일</th>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>직위</th>
+                                        <td>과장</td>
+                                        <th>급여부분</th>
+                                        <td>연봉직</td>
+                                        <th>월급여</th>
+                                        <td>3,000,000 (2021.02.02)</td>
+                                        <th>최종학력</th>
+                                        <td>전문대학</td>
+                                    </tr>
+                                    <tr>
+                                        <th>부서</th>
+                                        <td colspan="3">정보시스템사업본부 SI사업팀</td>
+                                        <th>전체해당경력</th>
+                                        <td><b><span class="orange">6년 6개월</span></b></td>
+                                        <th>이전해당경력</th>
+                                        <td>3년 3개월</td>
+                                    </tr>
+                                    <tr>
+                                        <th>입사구분</th>
+                                        <td>경력</td>
+                                        <th>사원구분</th>
+                                        <td>PG</td>
+                                        <th>퇴직일자</th>
+                                        <td><b><span class="orange">2013.06.06</span></b></td>
+                                        <th>퇴직사유</th>
+                                        <td>개인사정</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="tab_area t_11">
+                            <ul>
+                                <li><a href="">기본인적</a></li>
+                                <li><a href="" class="on">발령이력</a></li>
+                                <li><a href="">학력사항</a></li>
+                                <li><a href="">경력사항</a></li>
+                                <li><a href="">자격면허</a></li>
+                                <li><a href="">보증보험</a></li>
+                                <li><a href="">교육사항</a></li>
+                                <li><a href="">업무현황</a></li>
+                                <li><a href="">퇴직금</a></li>
+                                <li><a href="">원천징수영수증</a></li>
+                            </ul>
+                        </div>
+                        <div class="cols_area">
+                            <table class="row_table">
+                                <colgroup>
+                                    <col style="width:5%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th></th>
+                                        <th>발령일자</th>
+                                        <th>순번</th>
+                                        <th>발령</th>
+                                        <th>부서</th>
+                                        <th>직위</th>
+                                        <th>직급</th>
+                                        <th>호봉</th>
+                                        <th>월급여</th>
+                                        <th>세부발령사유</th>
+                                    </tr>
+                                    <tr>
+                                        <td><label></label><input type="checkbox"></td>
+                                        <td>2020.02.02</td>
+                                        <td>1</td>
+                                        <td>해임</td>
+                                        <td>정보시스템 사업본부 SI사업팀</td>
+                                        <td>대리</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>3,000,000</td>
+                                        <td>개인사정</td>
+                                    </tr>
+                                    <tr>
+                                        <td><label></label><input type="checkbox"></td>
+                                        <td>2020.02.02</td>
+                                        <td>1</td>
+                                        <td>해임</td>
+                                        <td>정보시스템 사업본부 SI사업팀</td>
+                                        <td>대리</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>3,000,000</td>
+                                        <td>개인사정</td>
+                                    </tr>
+                                    <tr>
+                                        <td><label></label><input type="checkbox"></td>
+                                        <td>2020.02.02</td>
+                                        <td>1</td>
+                                        <td>해임</td>
+                                        <td>정보시스템 사업본부 SI사업팀</td>
+                                        <td>대리</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>3,000,000</td>
+                                        <td>개인사정</td>
+                                    </tr>
+                                    <tr>
+                                        <td><label></label><input type="checkbox"></td>
+                                        <td>2020.02.02</td>
+                                        <td>1</td>
+                                        <td>해임</td>
+                                        <td>정보시스템 사업본부 SI사업팀</td>
+                                        <td>대리</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>3,000,000</td>
+                                        <td>개인사정</td>
+                                    </tr>
+                                    <tr>
+                                        <td><label></label><input type="checkbox"></td>
+                                        <td>2020.02.02</td>
+                                        <td>1</td>
+                                        <td>해임</td>
+                                        <td>정보시스템 사업본부 SI사업팀</td>
+                                        <td>대리</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>3,000,000</td>
+                                        <td>개인사정</td>
+                                    </tr>
+                                    <tr>
+                                        <td><label></label><input type="checkbox"></td>
+                                        <td>2020.02.02</td>
+                                        <td>1</td>
+                                        <td>해임</td>
+                                        <td>정보시스템 사업본부 SI사업팀</td>
+                                        <td>대리</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>3,000,000</td>
+                                        <td>개인사정</td>
+                                    </tr>
+                                    <tr>
+                                        <td><label></label><input type="checkbox"></td>
+                                        <td>2020.02.02</td>
+                                        <td>1</td>
+                                        <td>해임</td>
+                                        <td>정보시스템 사업본부 SI사업팀</td>
+                                        <td>대리</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>3,000,000</td>
+                                        <td>개인사정</td>
+                                    </tr>
+                                    <tr>
+                                        <td><label></label><input type="checkbox"></td>
+                                        <td>2020.02.02</td>
+                                        <td>1</td>
+                                        <td>해임</td>
+                                        <td>정보시스템 사업본부 SI사업팀</td>
+                                        <td>대리</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>3,000,000</td>
+                                        <td>개인사정</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+				</div>
+                <div id="footer">
+                    <p>Copyright (C) 2022 MCST. All rights reserved.</p>
+                    <div class="go_btn">
+                        <ul>
+                            <li><a href="#wrap"><img src="images/up_arrow.png" alt="top"/></a></li>
+                            <li><a href="#footer"><img src="images/down_arrow.png" alt="down"/></a></li>
+                        </ul>
+                    </div>
+                </div>
+			</div>
+            
+        </div>
+    </div>
+</body>
+</html>

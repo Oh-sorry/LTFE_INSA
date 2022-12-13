@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pg309501Sql">
+
+	<select id="selectPg309501List" parameterType="com.mcst.dto.gbn30.pg309501Dto" resultType="com.mcst.dto.gbn30.pg309501Dto">
+		SELECT MENU_ID,MENU_NM,MENU_SRC,MENU_GUBN1,MENU_GUBN2,MENU_GUBN3,USED_GUBN,INST_DATE,MENU_FORDER,MENU_SEQ
+		  FROM USR200T
+         WHERE MENU_GUBN2 = '00'
+           AND USED_GUBN = 'Y'
+        ORDER BY MENU_GUBN1
+	</select>
+
+	<select id="selectPg309501Info" parameterType="com.mcst.dto.gbn30.pg309501Dto" resultType="com.mcst.dto.gbn30.pg309501Dto">
+		SELECT MENU_ID,MENU_NM,MENU_SRC,MENU_GUBN1,MENU_GUBN2,MENU_GUBN3,USED_GUBN,INST_DATE,MENU_FORDER,MENU_SEQ
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{menuGubn1}
+           AND MENU_GUBN2 = '00'
+	</select>
+
+	<select id="selectPg309501Check" parameterType="com.mcst.dto.gbn30.pg309501Dto" resultType="java.lang.Integer">
+		SELECT COUNT(1) CNT
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{menuGubn1}
+           AND MENU_GUBN2 = '00'
+	</select>
+
+	<update id="updatePg309501" parameterType="com.mcst.dto.db.usr200tDto">
+		MERGE INTO USR200T A
+		USING DUAL
+		ON (A.MENU_ID = CONCAT(#{menuGubn1},'0000'))
+		WHEN MATCHED THEN
+			UPDATE SET A.MENU_NM = #{menuNm}
+		WHEN NOT MATCHED THEN
+			INSERT (A.MENU_ID, A.MENU_NM, A.MENU_SRC, A.MENU_GUBN1, A.MENU_GUBN2, A.MENU_GUBN3, A.USED_GUBN, A.INST_DATE, A.MENU_FORDER, A.MENU_SEQ)
+			VALUES (CONCAT(#{menuGubn1},'0000'), #{menuNm}, '', #{menuGubn1}, '00', '00', 'Y', SYSDATE, '', '0');
+	</update>
+
+	<select id="selectPg309501DelCheck" parameterType="com.mcst.dto.gbn30.pg309501Dto" resultType="java.lang.Integer">
+		SELECT COUNT(1) CNT
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{menuGubn1}
+           AND MENU_GUBN2 != '00'
+	</select>
+
+	<delete id="deletePg309501" parameterType="com.mcst.dto.gbn30.pg309501Dto">
+		DELETE
+		  FROM USR200T
+         WHERE MENU_GUBN1 = #{menuGubn1}
+	</delete>
+
+</mapper>

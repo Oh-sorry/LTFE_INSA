@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mainSql">
+
+	<select id="selectLoginInfo" parameterType="com.mcst.dto.loginDto" resultType="com.mcst.dto.loginDto">
+		SELECT A.PERN_NO, B.NAME, A.PERN_AUTH
+		  FROM USR100T A, HPA100T B
+		 WHERE A.PERN_NO = B.PERN_NO
+		   AND A.PERN_NO = #{pernNo}
+	</select>
+
+	<select id="selectLoginChk" parameterType="com.mcst.dto.loginDto" resultType="java.lang.Integer">
+		SELECT COUNT(1) CNT FROM USR100T WHERE PERN_NO = #{pernNo} AND PERN_PWD = MD5(#{pernPwd}) AND USED_GUBN = 'Y'
+	</select>
+
+	<select id="selectMenuAuth" parameterType="com.mcst.dto.loginDto" resultType="com.mcst.dto.loginMenuAuthDto">
+		 SELECT A.MENU_ID,A.MENU_NM,A.MENU_SRC,A.MENU_GUBN1,A.MENU_GUBN2,A.MENU_GUBN3,A.USED_GUBN,A.INST_DATE,A.MENU_FORDER,A.MENU_SEQ,
+		        (SELECT MENU_AUTH FROM USR400T B WHERE B.PERN_NUM = #{pernNo} AND SUBSTR(B.MENU_ID,1,2) = A.MENU_GUBN1) MENU_AUTH
+		 FROM USR200T A
+		 WHERE A.USED_GUBN = 'Y'
+		   AND A.MENU_GUBN1 IN (SELECT SUBSTR(MENU_ID,1,2) FROM USR400T WHERE PERN_NUM = #{pernNo} AND USED_GUBN = 'Y')
+		   ORDER BY A.MENU_GUBN1||TO_CHAR(A.MENU_SEQ,'00000000009')
+	</select>
+
+</mapper>
