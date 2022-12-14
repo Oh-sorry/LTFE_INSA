@@ -43,15 +43,26 @@ public class pg104500Controller {
     
     protected static Logger logger = Logger.getLogger(Main.class.getName());
     
-    @RequestMapping(value="/gbn10/pg104500.do", method={RequestMethod.GET, RequestMethod.POST})
-    public String pg104500(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletRequest request, HttpServletResponse reponse, HttpSession session, ModelMap model) throws Exception {
-    	
-    	List<pg104500Dto> pg104500DtoGbnList = pg104500Service.selectPg104500GbnList(pg104500Dto);
-    	
-    	model.put("gbnList", pg104500DtoGbnList);
-    	
-    	return "gbn10/pg104500";
-    }
+	@RequestMapping(value = "/gbn10/pg104500.do", method = { RequestMethod.GET, RequestMethod.POST })
+	public String pg104500(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletRequest request, HttpServletResponse reponse, HttpSession session, ModelMap model) throws Exception {
+		/* 부서 */
+		List<pg104500Dto> pg104500DtoGbnList = pg104500Service.selectPg104500GbnList(pg104500Dto);
+		
+		
+		model.put("gbnList", pg104500DtoGbnList);
+		
+		/*직위*/
+		List<pg104500Dto> pg104500DtoGbnList2 = pg104500Service.selectPg104500GbnList2(pg104500Dto);
+		/*직급*/
+		List<pg104500Dto> pg104500DtoGbnList3 = pg104500Service.selectPg104500GbnList3(pg104500Dto);
+		/* 급여구분 */
+		List<pg104500Dto> pg104500DtoGbnList4 = pg104500Service.selectPg104500GbnList4(pg104500Dto);
+		model.put("gbnList2", pg104500DtoGbnList2);
+		model.put("gbnList3", pg104500DtoGbnList3);
+		model.put("gbnList4", pg104500DtoGbnList4);
+
+		return "gbn10/pg104500";
+	}
     @RequestMapping(value="/gbn10/pg104500List.ajax", method={RequestMethod.POST})
     public ModelAndView pg104500List(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpSession session, Model model) throws Exception {
 

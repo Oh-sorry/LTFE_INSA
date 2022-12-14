@@ -15,12 +15,13 @@
 <link rel="stylesheet" href="<c:url value='/css/reset.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/newStyle.css'/>">
 <link rel="stylesheet" href="/css/jquery-ui.css" />
-<script src="/js/jquery-1.11.0.min.js"></script>
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
 <script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script src="<c:url value='/jqgrid/jquery.jqgrid.src.js'/>"></script>
 <script src="<c:url value='/jqgrid/i18n/grid.locale-kr.js'/>"></script>
-<script src="/js/newScript.js"></script>
+<script src="<c:url value='/js/loadingoverlay.min.js'/>"></script>
+<script src="<c:url value='/js/script.js'/>"></script>
+<script src="<c:url value='/js/common.js'/>"></script>
 
 <title>(주)엠씨에스텍 인사급여시스템</title>
 
@@ -34,7 +35,7 @@ $(document).ready(function() {
 	   	mtype: "POST",
 		datatype: "json",
 		locale : "kr",
-		/* postData : {'searchMenuGubn1':'10'}, */
+		postData : {'searchMenuGubn1':'10'},
 		jsonReader : {
 			root: "rowData",
 			repeatitems: false
@@ -45,9 +46,13 @@ $(document).ready(function() {
 			{label:'성별', name:'sexCode', align:'center'},
 			{label:'부서코드', name:'deptCode', align:'center', hidden:true},
 			{label:'부서', name:'deptName', align:'center'},
-			{label:'직위', name:'postCode', align:'center'},
-			{label:'입사구분', name:'joinCode', align:'center'},
+			{label:'직위코드', name:'postCode', align:'center', hidden:true},
+			{label:'직위', name:'postName', align:'center'},
+			{label:'입사구분코드', name:'joinCode', align:'center', hidden:true},
+			{label:'입사구분', name:'joinName', align:'center'},
+			{label:'사원구분코드', name:'employCode', align:'center', hidden:true},
 			{label:'사원구분', name:'employType', align:'center'},
+			{label:'급여구분코드', name:'salaryName', align:'center', hidden:true},
 			{label:'급여구분', name:'salaryCode', align:'center'},
 			{label:'연봉구분', name:'wagesAmt', align:'center'},
 			{label:'입사일자', name:'joinDate', align:'center'},
@@ -67,10 +72,10 @@ $(document).ready(function() {
 	   	loadComplete: function (data) {if($('#grid').getGridParam("records")== 0) alert('조회된 내용이 없습니다.');loadingOff();}
 	});
 });
-
+/* 
 $(window).bind('resize', function() {
 	$("#grid").setGridWidth($('#contents').width() -42, true);
-}).trigger('resize');
+}).trigger('resize'); */
 
 //To.do : menuGubn1, searchMenuGubn1 수정필요
 function goReload() {
@@ -127,7 +132,7 @@ function goReload() {
                                         	<label></label>
                                         		<select id="searchWorkGubn2" name="searchWorkGubn2">
                                         		<c:forEach var="gbnList" items="${gbnList}" varStatus="status">
-                                        			<option value="${gbnList.deptCode}">${gbnList.deptCodeName}</option>
+                                        			<option value="${gbnList.deptCode}">${gbnList.deptName}</option>
                                         		</c:forEach>
                                         		</select>
                                         </td>
@@ -136,8 +141,8 @@ function goReload() {
                                         <td>
                                         	<label></label>
                                         		<select id="searchWorkGubn3" name="searchWorkGubn3">
-                                        		<c:forEach var="gbnList" items="${gbnList}" varStatus="status">
-                                        			<option value="${gbnList.postCode}">${gbnList.postCode}</option>
+                                        		<c:forEach var="gbnList2" items="${gbnList2}" varStatus="status">
+                                        			<option value="${gbnList2.postCode}">${gbnList2.postName}</option>
                                         		</c:forEach>
                                         		</select>
                                         </td>
@@ -146,8 +151,8 @@ function goReload() {
                                         <td>
                                         	<label></label>
                                         		<select id="searchWorkGubn4" name="searchWorkGubn4">
-                                        		<c:forEach var="gbnList" items="${gbnList}" varStatus="status">
-                                        			<option value="${gbnList.payGrade}">${gbnList.payGrade}</option>
+                                        		<c:forEach var="gbnList3" items="${gbnList3}" varStatus="status">
+                                        			<option value="${gbnList3.payGrade}">${gbnList3.payName}</option>
                                         		</c:forEach>
                                         		</select>
                                         </td>
@@ -156,18 +161,17 @@ function goReload() {
                                         <td>
                                         	<label></label>
                                         		<select id="searchWorkGubn5" name="searchWorkGubn5">
-                                        		<c:forEach var="gbnList" items="${gbnList}" varStatus="status">
-                                        			<option value="${gbnList.salaryCode}">${gbnList.salaryCode}</option>
+                                        		<c:forEach var="gbnList4" items="${gbnList4}" varStatus="status">
+                                        			<option value="${gbnList4.salaryCode}">${gbnList4.salaryName}</option>
                                         		</c:forEach>
                                         		</select>
                                         </td>
                                         <th>사번/성명</th>
                                         <td>
+                                        	<label></label>
                                         	<input type="text" id="pernno" name="pernno">
-                                        </td>
-                                        <th>
                                         	<a href="javascript:goReload()" class="btn_small bt_grey">검색</a>
-                                        </th>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

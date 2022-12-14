@@ -3,14 +3,108 @@
 <mapper namespace="pg104500Sql">
 
 	<select id="selectPg104500GbnList" parameterType="com.mcst.dto.gbn10.pg104500Dto" resultType="com.mcst.dto.gbn10.pg104500Dto">
+		SELECT a.dept_code,
+		       a.dept_name
+		FROM   hpa100t a
+		GROUP BY a.dept_code
+	</select>
 	
+	<select id="selectPg104500GbnList2" parameterType="com.mcst.dto.gbn10.pg104500Dto" resultType="com.mcst.dto.gbn10.pg104500Dto">
+		SELECT 
+		       a.post_code,
+		       b.detail_code_name as post_name
+		FROM   hpa100t a,
+		       (SELECT *
+		       FROM    bco100t_bak20210917
+		       WHERE   bco100t_bak20210917.com_code = 'H005'
+		       ) b
+		WHERE  a.post_code   = b.detail_code (+)
+		GROUP BY a.post_code
+	</select>
 	
+	<select id="selectPg104500GbnList3" parameterType="com.mcst.dto.gbn10.pg104500Dto" resultType="com.mcst.dto.gbn10.pg104500Dto">
+		SELECT 
+		       a.pay_grade,
+		       g.detail_code_name as pay_name
+		FROM   hpa100t a,
+		       (SELECT *
+		       FROM    bco100t_bak20210917
+		       WHERE   bco100t_bak20210917.com_code = 'H004'
+		       ) g
+		WHERE  a.pay_grade   = g.detail_code (+)
+		AND    g.detail_code_name IS NOT NULL
+		GROUP BY a.pay_grade
+	</select>
+	
+	<select id="selectPg104500GbnList4" parameterType="com.mcst.dto.gbn10.pg104500Dto" resultType="com.mcst.dto.gbn10.pg104500Dto">
+		SELECT 
+		       a.salary_code,
+		       e.detail_code_name as salary_name
+		FROM   hpa100t a,
+		       (SELECT *
+		       FROM    bco100t_bak20210917
+		       WHERE   bco100t_bak20210917.com_code = 'H028'
+		       ) e
+		WHERE  a.salary_code = e.detail_code (+)
+		GROUP BY a.salary_code
 	</select>
 	
 	<select id="selectPg104500List" parameterType="com.mcst.dto.gbn10.pg104500Dto" resultType="com.mcst.dto.gbn10.pg104500Dto">
-	
-	
-	
+		SELECT a.pern_no,
+		       A.NAME,
+		       a.sex_code,
+		       a.dept_code,
+		       a.dept_name,
+		       a.post_code,
+		       b.detail_code_name AS post_name,
+		       a.join_code,
+		       c.detail_code_name AS join_name,
+		       a.employ_type,
+		       d.detail_code_name AS employ_name,
+		       a.salary_code,
+		       e.detail_code_name AS salary_name,
+		       a.wages_amt,
+		       a.join_date,
+		       a.retr_date,
+		       a.work_area,
+		       f.detail_code_name AS work_area_name,
+		       a.phone_no,
+		       a.mutual_yn,
+		       a.pay_grade,
+		       g.detail_code_name AS pay_name
+		FROM   hpa100t a,
+		       (SELECT *
+		       FROM    bco100t_bak20210917
+		       WHERE   bco100t_bak20210917.com_code = 'H005'
+		       ) b,
+		       (SELECT *
+		       FROM    bco100t_bak20210917
+		       WHERE   bco100t_bak20210917.com_code = 'H012'
+		       ) c,
+		       (SELECT *
+		       FROM    bco100t_bak20210917
+		       WHERE   bco100t_bak20210917.com_code = 'H024'
+		       ) d,
+		       (SELECT *
+		       FROM    bco100t_bak20210917
+		       WHERE   bco100t_bak20210917.com_code = 'H028'
+		       ) e,
+		       (SELECT *
+		       FROM    bco100t_bak20210917
+		       WHERE   bco100t_bak20210917.com_code = 'H003'
+		       ) f,
+		       (SELECT *
+		       FROM    bco100t_bak20210917
+		       WHERE   bco100t_bak20210917.com_code = 'H004'
+		       ) g
+		WHERE  a.post_code   = b.detail_code (+)
+		AND    a.join_code   = c.detail_code (+)
+		AND    a.employ_type = d.detail_code (+)
+		AND    a.salary_code = e.detail_code (+)
+		AND    a.work_area   = f.detail_code (+)
+		AND    a.pay_grade   = g.detail_code (+)
+		
+		
 	</select>
 
 </mapper>

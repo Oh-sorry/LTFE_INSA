@@ -20,6 +20,15 @@ public class pg104500ServiceImpl extends EgovAbstractServiceImpl implements pg10
 	public List<pg104500Dto> selectPg104500GbnList(pg104500Dto pg104500Dto) throws Exception {
 		return pg104500Dao.selectPg104500GbnList(pg104500Dto);
 	}
+	public List<pg104500Dto> selectPg104500GbnList2(pg104500Dto pg104500Dto) throws Exception {
+		return pg104500Dao.selectPg104500GbnList2(pg104500Dto);
+	}
+	public List<pg104500Dto> selectPg104500GbnList3(pg104500Dto pg104500Dto) throws Exception {
+		return pg104500Dao.selectPg104500GbnList3(pg104500Dto);
+	}
+	public List<pg104500Dto> selectPg104500GbnList4(pg104500Dto pg104500Dto) throws Exception {
+		return pg104500Dao.selectPg104500GbnList4(pg104500Dto);
+	}
 
 	public List<pg104500Dto> selectPg104500List(pg104500Dto pg104500Dto) throws Exception {
 		return pg104500Dao.selectPg104500List(pg104500Dto);
