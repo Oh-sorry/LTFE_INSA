@@ -23,6 +23,7 @@ public class pg104500Dto implements Serializable{
 	private String salaryCode;
 	private String salaryName;
 	private int wagesAmt;
+	private String stringWagesAmt;
 	private String joinDate;
 	private String retrDate;
 	private String workArea;
@@ -31,6 +32,8 @@ public class pg104500Dto implements Serializable{
 	private String mutualYn;
 	private String payGrade;
 	private String payName;
+	private String detailCode;
+	private String detailCodeName;
 	
 	
 	private String searchWorkGubn1;
@@ -122,6 +125,12 @@ public class pg104500Dto implements Serializable{
 	public void setWagesAmt(int wagesAmt) {
 		this.wagesAmt = wagesAmt;
 	}
+	public String getStringWagesAmt() {
+		return stringWagesAmt;
+	}
+	public void setStringWagesAmt(String stringWagesAmt) {
+		this.stringWagesAmt = stringWagesAmt;
+	}
 	public String getJoinDate() {
 		return joinDate;
 	}
@@ -170,6 +179,21 @@ public class pg104500Dto implements Serializable{
 	public void setPayName(String payName) {
 		this.payName = payName;
 	}
+	public String getDetailCode() {
+		return detailCode;
+	}
+	public void setDetailCode(String detailCode) {
+		this.detailCode = detailCode;
+	}
+	public String getDetailCodeName() {
+		return detailCodeName;
+	}
+	public void setDetailCodeName(String detailCodeName) {
+		this.detailCodeName = detailCodeName;
+	}
+	
+	
+	
 	public String getSearchWorkGubn1() {
 		return searchWorkGubn1;
 	}

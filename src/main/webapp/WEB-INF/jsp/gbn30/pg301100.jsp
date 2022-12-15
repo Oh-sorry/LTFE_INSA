@@ -135,6 +135,8 @@ function goReload() {
 	$('[id=inputForm] #menuGubn1').val($('#searchMenuGubn1').val());
 	var formData = $('#searchForm').serializeArray();
 
+	console.log(formData);
+	
 	$('#grid').clearGridData();
 	$('#grid').setGridParam({datatype : "json",
 		                     postData : formData }).trigger("reloadGrid");
