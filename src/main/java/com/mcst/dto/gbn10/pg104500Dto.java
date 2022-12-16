@@ -22,7 +22,7 @@ public class pg104500Dto implements Serializable{
 	private String employName;
 	private String salaryCode;
 	private String salaryName;
-	private int wagesAmt;
+	private String wagesAmt;
 	private String stringWagesAmt;
 	private String joinDate;
 	private String retrDate;
@@ -119,10 +119,11 @@ public class pg104500Dto implements Serializable{
 	public void setSalaryName(String salaryName) {
 		this.salaryName = salaryName;
 	}
-	public int getWagesAmt() {
+
+	public String getWagesAmt() {
 		return wagesAmt;
 	}
-	public void setWagesAmt(int wagesAmt) {
+	public void setWagesAmt(String wagesAmt) {
 		this.wagesAmt = wagesAmt;
 	}
 	public String getStringWagesAmt() {

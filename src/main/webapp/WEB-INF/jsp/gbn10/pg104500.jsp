@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/reset.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/newStyle.css'/>">
-<link rel="stylesheet" href="/css/jquery-ui.css" />
+<%-- <link rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>"> --%>
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
 <script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script src="<c:url value='/jqgrid/jquery.jqgrid.src.js'/>"></script>
@@ -45,7 +45,7 @@ $(document).ready(function() {
 			{label:'성명', name:'name', align:'center', width:100},
 			{label:'성별', name:'sexCode', align:'center', width:50},
 			{label:'부서코드', name:'deptCode', align:'center', hidden:true},
-			{label:'부서', name:'deptName', align:'center', width:150},
+			{label:'부서', name:'deptName', align:'center', width:200},
 			{label:'직위코드', name:'postCode', align:'center', hidden:true},
 			{label:'직위', name:'postName', align:'center', width:100},
 			{label:'직급코드', name:'payGrade', align:'center', hidden:true},
@@ -54,9 +54,9 @@ $(document).ready(function() {
 			{label:'입사구분', name:'joinName', align:'center', width:100},
 			{label:'사원구분코드', name:'employType', align:'center', hidden:true},
 			{label:'사원구분', name:'employName', align:'center', width:100},
-			{label:'급여구분코드', name:'salaryName', align:'center', hidden:true},
-			{label:'급여구분', name:'salaryCode', align:'center', hidden:true},
-			/* {label:'연봉구분', name:'wagesAmt', align:'center'}, */
+			{label:'급여구분', name:'salaryName', align:'center'},
+			{label:'급여구분코드', name:'salaryCode', align:'center', hidden:true},
+			{label:'연봉구분', name:'wagesAmt', align:'center', hidden:true},
 			{label:'연봉구분', name:'stringWagesAmt', align:'center', width:100},
 			{label:'입사일자', name:'joinDate', align:'center', width:150},
 			{label:'퇴사일자', name:'retrDate', align:'center', width:150},
@@ -65,7 +65,6 @@ $(document).ready(function() {
 			{label:'핸드폰', name:'phoneNo', align:'center', width:150},
 			{label:'상조회', name:'mutualYn', align:'center', width:50},
 			{label:'재퇴직코드', name:'detailCode', align:'center', hidden:true},
-			{label:'재퇴직', name:'detailCodeName', align:'center', hidden:true}
 	   	],
 	   	loadonce: true,
 	   	sortable : true,
@@ -73,7 +72,7 @@ $(document).ready(function() {
         rownumbers : true,
 	   	rowNum: 9007199254740992,
 	   	width: $('#contents').width() -42,
-        height: 500,
+        height: 460,
 	   	beforeRequest : function () {loadingOn();},
 	   	loadComplete: function (data) {if($('#grid').getGridParam("records")== 0) alert('조회된 내용이 없습니다.');loadingOff();}
 	});
@@ -83,13 +82,13 @@ $(window).bind('resize', function() {
 	$("#grid").setGridWidth($('#contents').width() -42, true);
 }).trigger('resize');
 
-//To.do : menuGubn1, searchMenuGubn1 수정필요
 function goReload() {
-
-	$('[id=inputForm] #deptCode').val($('#searchMenuGubn1').val());
-	$('[id=inputForm] #postCode').val($('#searchMenuGubn2').val());
-	$('[id=inputForm] #payGrade').val($('#searchMenuGubn3').val());
-	$('[id=inputForm] #salaryCode').val($('#searchMenuGubn4').val());
+	$('[id=inputForm] #detailCode').val($('#detailCode').val());
+	$('[id=inputForm] #deptCode').val($('#deptCode').val());
+	$('[id=inputForm] #postCode').val($('#postCode').val());
+	$('[id=inputForm] #payGrade').val($('#payGrade').val());
+	$('[id=inputForm] #salaryCode').val($('#salaryCode').val());
+	$('[id=inputForm] #pernNo').val($('#pernNo').val());
 	
 	var formData = $('#searchForm').serializeArray();
 
@@ -98,6 +97,12 @@ function goReload() {
 	$('#grid').clearGridData();
 	$('#grid').setGridParam({datatype : "json",
 		                     postData : formData }).trigger("reloadGrid");
+}
+
+function goExcel() {
+	
+	document.inputForm.action = "<c:url value='/gbn10/pg104500Excel.do'/>";
+	document.inputForm.submit();
 }
 
 </script>
@@ -121,7 +126,7 @@ function goReload() {
 					<h3>기본검색</h3>
 					<div class="section">
 						<div class="search_Area m_b_20">
-						    <form name="searchForm" id="searchForm">
+						    <form name="searchForm" id="searchForm" onsubmit="return false">
                             <table>
                                 <colgroup>
                                     <col style="width:7%" />
@@ -129,18 +134,15 @@ function goReload() {
                                 </colgroup>
                                 <tbody>
                                     <tr>
-                                    	<!-- TO.Do 연결 어캐하지 미침 그냥 터짐 -->
                                         <th>재/퇴직</th>
                                         <td>
                                             <label></label>
-                                              <select id="joinDateCode" name="joinDateCode">
+                                              <select id="detailCode" name="detailCode">
 								     	   	  	<option value="" selected>--선택--</option>
-								     	   	  	<c:forEach var="gbnJoin" items="${gbnJoin}" varStatus="status">
-                                        			<option value="${gbnJoin.detailCode}">${gbnJoin.detailCodeName}</option>
-                                        		</c:forEach>
+                                        		<option value="1">재직</option>
+                                        		<option value="2">퇴직</option>
 								      		  </select>
                                         </td>
-                                        <!-- TO.Do 연결 어캐하지 미침 그냥 터짐 -->
                                         <th>부서</th>
                                         <td>
                                         	<label></label>
@@ -187,7 +189,7 @@ function goReload() {
                                         <th>사번/성명</th>
                                         <td>
                                         	<label></label>
-                                        	<input type="text" id="pernno" name="pernno">
+                                        	<input type="text" id="pernNo" name="pernNo">
                                         	<a href="javascript:goReload()" class="btn_small bt_grey">검색</a>
                                         </td>
                                     </tr>
@@ -199,14 +201,14 @@ function goReload() {
                     </div>
                     <div class="btn_group">
                         <div class="right">
-                            <a href="" class="btn_large bt_blue" href="">엑셀</a>
+                            <a class="btn_large bt_blue" href="javascript:goExcel()">엑셀</a>
                         </div>
                     </div>
 				</div>
                 <jsp:include page="/WEB-INF/jsp/bottom.jsp" flush="true"/>
 			</div>
 			<form name="inputForm" id="inputForm" method="post">
-				<input type="hidden" name="pernNo" id="pernNo">
+				<input type="hidden" name="pernNo" id="pernNo" value="">
 				<input type="hidden" name="name" id="name">
 				<input type="hidden" name="sexCode" id="sexCode">
 				<input type="hidden" name="deptCode" id="deptCode" value="150100">
@@ -222,7 +224,7 @@ function goReload() {
 				<input type="hidden" name="salaryCode" id="salaryCode" value="01">
 				<input type="hidden" name="salaryName" id="salaryName">
 				<input type="hidden" name="stringWagesAmt" id="stringWagesAmt">
-				<!-- <input type="hidden" name="wagesAmt" id="wagesAmt"> -->
+				<input type="hidden" name="wagesAmt" id="wagesAmt">
 				<input type="hidden" name="joinDate" id="joinDate">
 				<input type="hidden" name="retrDate" id="retrDate">
 				<input type="hidden" name="workArea" id="workArea">
@@ -230,7 +232,6 @@ function goReload() {
 				<input type="hidden" name="phoneNo" id="phoneNo">
 				<input type="hidden" name="mutualYn" id="mutualYn">
 				<input type="hidden" name="detailCode" id="detailCode">
-				<input type="hidden" name="detailCodeName" id="detailCodeName">
 				
 			</form>
         </div>

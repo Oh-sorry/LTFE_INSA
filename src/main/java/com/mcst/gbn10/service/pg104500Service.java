@@ -18,5 +18,7 @@ public interface pg104500Service {
 
 	public List<pg104500Dto> selectPg104500GbnJoinList(pg104500Dto pg104500Dto) throws Exception;
 
+	public List<pg104500Dto> excelDownload(pg104500Dto pg104500Dto) throws Exception;
+
 
 }

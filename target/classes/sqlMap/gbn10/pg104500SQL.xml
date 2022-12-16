@@ -113,7 +113,12 @@
 		AND    a.work_area   = f.detail_code (+)
 		AND    a.pay_grade   = g.detail_code (+)
 		AND    a.mutual_yn is not null
-		
+		<if test="detailCode != null and detailCode == 1">
+			AND a.retr_date is NULL
+		</if>
+		<if test="detailCode != null and detailCode == 2">
+			AND a.retr_date is NOT NULL
+		</if>
 		<if test="deptCode != null and deptCode != ''">
 			AND a.dept_code = #{deptCode}
 		</if>
@@ -126,6 +131,10 @@
 		<if test="salaryCode != null and salaryCode != ''">
 			AND a.salary_code = #{salaryCode}
 		</if>
+		<if test="pernNo != null and pernNo != ''">
+			AND (a.pern_no LIKE '%' || #{pernNo} || '%' OR a.name LIKE '%' || #{pernNo} || '%')
+		</if>
+		
 	</select>
 
 </mapper>

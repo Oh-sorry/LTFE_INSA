@@ -189,7 +189,18 @@
 		    <artifactId>base64coder</artifactId>
 		    <version>2010-12-19</version>
 		</dependency>
-
+		<!-- 엑셀 제어(xls) maven setting -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.12</version>
+		</dependency>
+		<!-- 엑셀 제어(xlsx) maven setting-->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.9</version>
+		</dependency>
 	</dependencies>
 
 	<build>
