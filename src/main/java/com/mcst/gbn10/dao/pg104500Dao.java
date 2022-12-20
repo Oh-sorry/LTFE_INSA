@@ -30,7 +30,7 @@ public class pg104500Dao extends EgovAbstractMapper{
 		return selectList("pg104500Sql.selectPg104500List", pg104500Dto);
 	}
 	public List<pg104500Dto> excelDownload(pg104500Dto pg104500Dto) {
-		return selectList("pg104500Sql.selectPg104500List", pg104500Dto);
+		return selectList("pg104500Sql.excelDownload", pg104500Dto);
 	}
 
 }

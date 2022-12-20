@@ -12,9 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.eclipse.jdt.internal.compiler.batch.Main;
 import org.egovframe.rte.fdl.property.EgovPropertyService;
@@ -63,6 +61,7 @@ public class pg104500Controller {
 	    }
 	    return src.replaceFirst("(^02|[0-9]{3})([0-9]{3,4})([0-9]{4})$", "$1-$2-$3");
 	}
+	
 	/* 연봉구분 형식 (100000 -> 1,000,000) */
 	public String comma(int value) {
 		DecimalFormat df = new DecimalFormat("###,###");
@@ -133,6 +132,7 @@ public class pg104500Controller {
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		return modelAndView;
 	}
+	/* 엑셀 다운로드 */
 	@RequestMapping(value = "/gbn10/pg104500Excel.do")
 	public void ExcelDownload(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletResponse response) throws Exception {
 		XSSFWorkbook wb = null;
@@ -144,12 +144,50 @@ public class pg104500Controller {
 		int cellCount = 0;
 		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
-		logger.info("111111");
-		/*
-		 * List<pg104500Dto> excelDownload = pg104500Service.excelDownload(pg104500Dto);
-		 */
-		logger.info("222222");
+		List<pg104500Dto> excelDownload = pg104500Service.excelDownload(pg104500Dto);
 		
+		for (int i = 0; i < excelDownload.size(); i++) {
+
+			/* 연봉구분 형식 (100000 -> 1,000,000) */
+			excelDownload.get(i).setStringWagesAmt(comma(Integer.parseInt(excelDownload.get(i).getWagesAmt())));
+
+			/* 날짜 형식 (yyyymmdd -> yyyy.mm.dd) */
+			excelDownload.get(i).setJoinDate(dateUtil.formatDate(excelDownload.get(i).getJoinDate(), '.'));
+			if (excelDownload.get(i).getRetrDate() != null) {
+				excelDownload.get(i).setRetrDate(dateUtil.formatDate(excelDownload.get(i).getRetrDate(), '.'));
+			}
+
+			/* 전화번호 decode */
+			excelDownload.get(i).setPhoneNo(phone(AES128.decrypt(excelDownload.get(i).getPhoneNo())));
+
+			/* 남/여 구분 */
+			if(excelDownload.get(i).getSexCode().equals("1")) {
+				excelDownload.get(i).setSexCode("남");
+			} else {
+				excelDownload.get(i).setSexCode("여");
+			}
+			
+			/* 상조회 구분 */
+			if(excelDownload.get(i).getMutualYn().equals("1")) {
+				excelDownload.get(i).setMutualYn("Y");
+			} else {
+				excelDownload.get(i).setMutualYn("N");
+			}
+		}
+		// 열 폭 수정
+		CellStyle style = wb.createCellStyle();
+		style = wb.createCellStyle();
+		style.setAlignment(CellStyle.ALIGN_RIGHT);
+		style.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+		
+		sheet.setColumnWidth(3, 8000);
+		sheet.setColumnWidth(7, 3000);
+		sheet.setColumnWidth(9, 3000);
+		sheet.setColumnWidth(10, 3000);
+		sheet.setColumnWidth(11, 4000);
+		sheet.setColumnWidth(12, 4000);
+		
+		//header
 		row = sheet.createRow(0);
 		cell = row.createCell(0);
 		cell.setCellValue("사번");
@@ -180,44 +218,46 @@ public class pg104500Controller {
 		cell = row.createCell(13);
 		cell.setCellValue("상조회");
 		
+		// Body
+		logger.info("사원 등록 수 :" + excelDownload.size());
 		
-		
-		/*
-		 * for (int i = 0; i < excelDownload.size(); i++) { row = sheet.createRow(i +
-		 * 1); cellCount = 0; cell = row.createCell(cellCount++); cell.setCellValue(i);
-		 * cell = row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getPernNo()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getName()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getSexCode()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getDeptName()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getPostName()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getJoinName()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getEmployName()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getSalaryName()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getWagesAmt()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getJoinDate()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getRetrDate()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getWorkAreaName()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getPhoneNo()); cell =
-		 * row.createCell(cellCount++);
-		 * cell.setCellValue(excelDownload.get(i).getMutualYn()); }
-		 */
+		for (int i = 0; i < excelDownload.size(); i++) {
+			row = sheet.createRow(i + 1);
+			cellCount = 0;
+			cell = row.createCell(cellCount++);
+			
+			cell.setCellValue(excelDownload.get(i).getPernNo());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getName());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getSexCode());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getDeptName());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getPostName());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getJoinName());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getEmployName());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getSalaryName());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getStringWagesAmt());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getJoinDate());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getRetrDate());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getWorkAreaName());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getPhoneNo());
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getMutualYn());
+		}
 
 		// 컨텐츠 타입과 파일명 지정
 		response.setContentType("ms-vnd/excel");
-		response.setHeader("Content-Disposition", "attachment; filename=excelTest (" + sdf1.format(System.currentTimeMillis()) + ").xlsx"); // 파일이름지정.
+		response.setHeader("Content-Disposition", "attachment; filename=INSA (" + sdf1.format(System.currentTimeMillis()) + ").xlsx"); // 파일이름지정.
 		// response OutputStream에 엑셀 작성
 		wb.write(response.getOutputStream());
 	}

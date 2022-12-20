@@ -100,7 +100,7 @@ function goReload() {
 }
 
 function goExcel() {
-	
+	goReload();
 	document.inputForm.action = "<c:url value='/gbn10/pg104500Excel.do'/>";
 	document.inputForm.submit();
 }
