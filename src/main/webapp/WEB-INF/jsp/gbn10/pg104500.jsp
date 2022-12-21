@@ -42,6 +42,7 @@ $(document).ready(function() {
 		},
 		colModel:[
 			{label:'사번', name:'pernNo', align:'center', width:100},
+			{label:'검색코드', name:'pernNum', align:'center', hidden:true},
 			{label:'성명', name:'name', align:'center', width:100},
 			{label:'성별', name:'sexCode', align:'center', width:50},
 			{label:'부서코드', name:'deptCode', align:'center', hidden:true},
@@ -75,7 +76,9 @@ $(document).ready(function() {
         height: 460,
 	   	beforeRequest : function () {loadingOn();},
 	   	loadComplete: function (data) {if($('#grid').getGridParam("records")== 0) alert('조회된 내용이 없습니다.');loadingOff();}
+	   
 	});
+	goReload();
 });
 
 $(window).bind('resize', function() {
@@ -90,7 +93,7 @@ function goReload() {
 	$('[id=inputForm] #salaryCode').val($('#salaryCode').val());
 	$('[id=inputForm] #pernNo').val($('#pernNo').val());
 	
-	var formData = $('#searchForm').serializeArray();
+	var formData = $('#inputForm').serializeArray();
 
 	console.log(formData);
 	
@@ -104,6 +107,18 @@ function goExcel() {
 	document.inputForm.action = "<c:url value='/gbn10/pg104500Excel.do'/>";
 	document.inputForm.submit();
 }
+
+$( function() {
+    $( "#pernNo" ).autocomplete({
+      source: "<c:url value='/pnSearch.ajax' />",
+      minLength: 1,
+      select: function( event, ui ) {
+        $('[id=inputForm] #pernNum').val(ui.item.value.substring(0,7));
+        $('#inputForm').attr("action", "<c:url value='/gbn10/pg104500Search.do'/>");
+        inputForm.submit();
+      }
+    });
+  });
 
 </script>
 </head>
@@ -188,8 +203,14 @@ function goExcel() {
                                         </td>
                                         <th>사번/성명</th>
                                         <td>
-                                        	<label></label>
-                                        	<input type="text" id="pernNo" name="pernNo">
+                                        	<c:if test="${pernInfo == null}">
+	                                        	<label></label>
+	                                        	<input type="text" id="pernNo" name="pernNo">
+                                        	</c:if>
+                                        	<c:if test="${pernInfo != null}">
+                                        		<label></label>
+                                        		<input type="text" id="pernNo" name="pernNo" value="${pernInfo.pernNo}">
+                                        	</c:if>
                                         	<a href="javascript:goReload()" class="btn_small bt_grey">검색</a>
                                         </td>
                                     </tr>
@@ -232,7 +253,7 @@ function goExcel() {
 				<input type="hidden" name="phoneNo" id="phoneNo">
 				<input type="hidden" name="mutualYn" id="mutualYn">
 				<input type="hidden" name="detailCode" id="detailCode">
-				
+				<input type="hidden" name="pernNum" id="pernNum" value="${pernInfo.pernNo}">
 			</form>
         </div>
     </div>

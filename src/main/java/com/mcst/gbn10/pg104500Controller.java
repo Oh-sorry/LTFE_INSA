@@ -22,12 +22,15 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.mcst.main.service.mainService;
 import com.mcst.AES128.AES128;
 import com.mcst.common.dateUtil;
+import com.mcst.dto.pernInfoDto;
 import com.mcst.dto.gbn10.pg104500Dto;
+import com.mcst.dto.gbn30.pg309502Dto;
 import com.mcst.gbn10.service.pg104500Service;
 
 import egovframework.com.EgovMessageSource;
@@ -92,7 +95,7 @@ public class pg104500Controller {
 		return "gbn10/pg104500";
 	}
 
-	@RequestMapping(value = "/gbn10/pg104500List.ajax", method = { RequestMethod.POST })
+	@RequestMapping(value = "/gbn10/pg104500List.ajax", method = {  RequestMethod.GET, RequestMethod.POST })
 	public ModelAndView pg104500List(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpSession session, Model model) throws Exception {
 
 		List<pg104500Dto> pg104500DtoList = pg104500Service.selectPg104500List(pg104500Dto);
@@ -132,6 +135,7 @@ public class pg104500Controller {
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		return modelAndView;
 	}
+	
 	/* 엑셀 다운로드 */
 	@RequestMapping(value = "/gbn10/pg104500Excel.do")
 	public void ExcelDownload(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletResponse response) throws Exception {
@@ -179,6 +183,10 @@ public class pg104500Controller {
 		style = wb.createCellStyle();
 		style.setAlignment(CellStyle.ALIGN_RIGHT);
 		style.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+		/*
+		 * cell = row.createCell(0); cell.setCellStyle(style);
+		 */
+		
 		
 		sheet.setColumnWidth(3, 8000);
 		sheet.setColumnWidth(7, 3000);
@@ -261,4 +269,36 @@ public class pg104500Controller {
 		// response OutputStream에 엑셀 작성
 		wb.write(response.getOutputStream());
 	}
+	
+	@RequestMapping(value="/pnSearch.ajax", method = {RequestMethod.GET})
+	public @ResponseBody Map pnSearch(HttpServletRequest request, HttpServletResponse reponse, HttpSession session, Model model) throws Exception {
+		logger.info(request.getParameter("term"));
+
+    	String searchName = request.getParameter("term");
+    	
+    	pg104500Dto pg104500Dto = new pg104500Dto();
+    	
+    	pg104500Dto.setSearchName(searchName);
+    	
+    	List<pg104500Dto> pnSearchDtoList = pg104500Service.selectSearchName(pg104500Dto);
+    	
+    	model.addAttribute("pnSearch", pnSearchDtoList);
+    	Map<String, Object> result = new HashMap<String, Object>();
+    	
+    	for(int i=0; i<pnSearchDtoList.size(); i++) {
+    		result.put(pnSearchDtoList.get(i).getPernNo(), pnSearchDtoList.get(i).getName());
+    	}
+    	
+    	return result;
+	}
+	
+	@RequestMapping(value = "/gbn10/pg104500Search.do", method = { RequestMethod.POST })
+	public String pg104500Search(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletRequest request, HttpServletResponse reponse, HttpSession session, Model model) throws Exception {
+		
+		pg104500Dto pernInfoDto = pg104500Service.selectPernInfo(pg104500Dto.getPernNum());
+		model.addAttribute("pernInfo", pernInfoDto);
+		
+		return "gbn10/pg104500";
+	}
 }
+	

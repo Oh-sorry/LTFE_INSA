@@ -216,4 +216,26 @@
 		
 	</select>
 	
+	<select id="selectSearchName" parameterType="com.mcst.dto.gbn10.pg104500Dto" resultType="com.mcst.dto.gbn10.pg104500Dto">
+		SELECT PERN_NO, PERN_NO || ' '|| NAME ||' ('|| NVL(SUBSTR(AESDECRYPT(BIRT_DATE),1,4),'')||'.'||NVL(SUBSTR(AESDECRYPT(BIRT_DATE),5,2),'')||'.'||NVL(SUBSTR(AESDECRYPT(BIRT_DATE),7,2),'')||') '||NVL(DEPT_NAME,'') NAME
+  		  FROM HPA100T USE INDEX(hpa100t_idx01)
+         WHERE (NAME LIKE #{searchName}||'%' OR PERN_NO LIKE #{searchName}||'%')
+	</select>
+	
+	<select id="selectPernInfo" parameterType="java.lang.String" resultType="com.mcst.dto.gbn10.pg104500Dto">
+		SELECT PERN_NO
+		     , NAME
+		     , DEPT_CODE
+		     , DEPT_NAME
+		     , POST_CODE
+		     , PAY_GRADE
+		     , PAY_GRADE2
+		     , JOIN_CODE
+		     , AESDECRYPT(REPRE_NUM) REPRE_NUM
+		     , SEX_CODE
+		     , AESDECRYPT(BIRT_DATE) BIRT_DATE
+		  FROM HPA100T
+		  WHERE PERN_NO = #{value}
+	</select>
+	
 </mapper>

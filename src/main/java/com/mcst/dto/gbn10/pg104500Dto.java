@@ -35,12 +35,16 @@ public class pg104500Dto implements Serializable{
 	private String detailCode;
 	private String detailCodeName;
 	
+	private String searchName;
+	private String pernNum;
 	
 	private String searchWorkGubn1;
 	private String searchWorkGubn2;
 	private String searchWorkGubn3;
 	private String searchWorkGubn4;
 	private String searchWorkGubn5;
+	
+	
 	public String getPernNo() {
 		return pernNo;
 	}
@@ -191,6 +195,22 @@ public class pg104500Dto implements Serializable{
 	}
 	public void setDetailCodeName(String detailCodeName) {
 		this.detailCodeName = detailCodeName;
+	}
+	
+	
+	
+	
+	public String getSearchName() {
+		return searchName;
+	}
+	public void setSearchName(String searchName) {
+		this.searchName = searchName;
+	}
+	public String getPernNum() {
+		return pernNum;
+	}
+	public void setPernNum(String pernNum) {
+		this.pernNum = pernNum;
 	}
 	
 	

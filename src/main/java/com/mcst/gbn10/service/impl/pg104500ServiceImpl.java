@@ -40,4 +40,12 @@ public class pg104500ServiceImpl extends EgovAbstractServiceImpl implements pg10
 	public List<pg104500Dto> excelDownload(pg104500Dto pg104500Dto) throws Exception {
 		return pg104500Dao.excelDownload(pg104500Dto);
 	}
+	
+	public List<pg104500Dto> selectSearchName(pg104500Dto pg104500Dto) throws Exception {
+		return pg104500Dao.selectSearchName(pg104500Dto);
+	}
+	
+	public pg104500Dto selectPernInfo(String pernNo) throws Exception {
+		return pg104500Dao.selectPernInfo(pernNo);
+	}
 }

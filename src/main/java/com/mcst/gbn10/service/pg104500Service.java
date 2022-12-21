@@ -20,5 +20,10 @@ public interface pg104500Service {
 
 	public List<pg104500Dto> excelDownload(pg104500Dto pg104500Dto) throws Exception;
 
+	public List<pg104500Dto> selectSearchName(pg104500Dto pg104500Dto) throws Exception;
+
+	public pg104500Dto selectPernInfo(String pernNo) throws Exception;
+
+
 
 }

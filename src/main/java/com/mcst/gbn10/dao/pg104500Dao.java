@@ -32,5 +32,11 @@ public class pg104500Dao extends EgovAbstractMapper{
 	public List<pg104500Dto> excelDownload(pg104500Dto pg104500Dto) {
 		return selectList("pg104500Sql.excelDownload", pg104500Dto);
 	}
+	public List<pg104500Dto> selectSearchName(pg104500Dto pg104500Dto) {
+		return selectList("pg104500Sql.selectSearchName", pg104500Dto);
+	}
+	public pg104500Dto selectPernInfo(String pernNo) {
+		return selectOne("pg104500Sql.selectPernInfo", pernNo);
+	}
 
 }
