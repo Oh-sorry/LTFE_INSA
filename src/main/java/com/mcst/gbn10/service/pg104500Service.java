@@ -24,6 +24,10 @@ public interface pg104500Service {
 
 	public pg104500Dto selectPernInfo(String pernNo) throws Exception;
 
+	public List<pg104500Dto> selectPg104500DeptList1(pg104500Dto pg104500Dto) throws Exception;
+
+	public List<pg104500Dto> selectPg104500DeptList2(pg104500Dto pg104500Dto) throws Exception;
+
 
 
 }

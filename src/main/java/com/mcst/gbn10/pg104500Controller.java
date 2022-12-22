@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.mcst.main.service.mainService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mcst.AES128.AES128;
 import com.mcst.common.dateUtil;
 import com.mcst.dto.pernInfoDto;
@@ -73,12 +74,14 @@ public class pg104500Controller {
 	}
 	
 	@RequestMapping(value = "/gbn10/pg104500.do", method = { RequestMethod.GET, RequestMethod.POST })
-	public String pg104500(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletRequest request,
-			HttpServletResponse reponse, HttpSession session, ModelMap model) throws Exception {
+	public String pg104500(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletRequest request, HttpServletResponse reponse, HttpSession session, ModelMap model) throws Exception {
 		/* 재/퇴직 */
 		List<pg104500Dto> pg104500DtoGbnJoinList = pg104500Service.selectPg104500GbnJoinList(pg104500Dto);
 		/* 부서 */
 		List<pg104500Dto> pg104500DtoGbnList = pg104500Service.selectPg104500GbnList(pg104500Dto);
+		/* 부서 앞/뒤 */
+		List<pg104500Dto> pg104500DtoDeptList1 = pg104500Service.selectPg104500DeptList1(pg104500Dto);
+		List<pg104500Dto> pg104500DtoDeptList2 = pg104500Service.selectPg104500DeptList2(pg104500Dto);
 		/* 직위 */
 		List<pg104500Dto> pg104500DtoGbnList2 = pg104500Service.selectPg104500GbnList2(pg104500Dto);
 		/* 직급 */
@@ -86,23 +89,9 @@ public class pg104500Controller {
 		/* 급여구분 */
 		List<pg104500Dto> pg104500DtoGbnList4 = pg104500Service.selectPg104500GbnList4(pg104500Dto);
 
-		model.put("gbnList", pg104500DtoGbnList);
-		model.put("gbnList2", pg104500DtoGbnList2);
-		model.put("gbnList3", pg104500DtoGbnList3);
-		model.put("gbnList4", pg104500DtoGbnList4);
-		model.put("gbnJoin", pg104500DtoGbnJoinList);
-
-		return "gbn10/pg104500";
-	}
-
-	@RequestMapping(value = "/gbn10/pg104500List.ajax", method = {  RequestMethod.GET, RequestMethod.POST })
-	public ModelAndView pg104500List(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpSession session, Model model) throws Exception {
-
+		
 		List<pg104500Dto> pg104500DtoList = pg104500Service.selectPg104500List(pg104500Dto);
-
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("rowData", pg104500DtoList);
-
+		
 		for (int i = 0; i < pg104500DtoList.size(); i++) {
 
 			/* 연봉구분 형식 (100000 -> 1,000,000) */
@@ -132,11 +121,24 @@ public class pg104500Controller {
 			}
 		}
 
-		ModelAndView modelAndView = new ModelAndView("jsonView", map);
-		return modelAndView;
+		model.put("gbnList", pg104500DtoGbnList);
+		model.addAttribute("deptList1", pg104500DtoDeptList1);
+		model.addAttribute("deptList2", pg104500DtoDeptList2);
+		model.put("gbnList2", pg104500DtoGbnList2);
+		model.put("gbnList3", pg104500DtoGbnList3);
+		model.put("gbnList4", pg104500DtoGbnList4);
+		model.put("gbnJoin", pg104500DtoGbnJoinList);
+		model.addAttribute("pernList", pg104500DtoList);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map result = objectMapper.convertValue(pg104500Dto, Map.class);
+		model.addAttribute("searchFormData", result);
+		
+		return "gbn10/pg104500";
 	}
-	
+
 	/* 엑셀 다운로드 */
+	@SuppressWarnings("resource")
 	@RequestMapping(value = "/gbn10/pg104500Excel.do")
 	public void ExcelDownload(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletResponse response) throws Exception {
 		XSSFWorkbook wb = null;
@@ -181,12 +183,6 @@ public class pg104500Controller {
 		// 열 폭 수정
 		CellStyle style = wb.createCellStyle();
 		style = wb.createCellStyle();
-		style.setAlignment(CellStyle.ALIGN_RIGHT);
-		style.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
-		/*
-		 * cell = row.createCell(0); cell.setCellStyle(style);
-		 */
-		
 		
 		sheet.setColumnWidth(3, 8000);
 		sheet.setColumnWidth(7, 3000);
@@ -268,37 +264,9 @@ public class pg104500Controller {
 		response.setHeader("Content-Disposition", "attachment; filename=INSA (" + sdf1.format(System.currentTimeMillis()) + ").xlsx"); // 파일이름지정.
 		// response OutputStream에 엑셀 작성
 		wb.write(response.getOutputStream());
+		wb.close();
 	}
 	
-	@RequestMapping(value="/pnSearch.ajax", method = {RequestMethod.GET})
-	public @ResponseBody Map pnSearch(HttpServletRequest request, HttpServletResponse reponse, HttpSession session, Model model) throws Exception {
-		logger.info(request.getParameter("term"));
 
-    	String searchName = request.getParameter("term");
-    	
-    	pg104500Dto pg104500Dto = new pg104500Dto();
-    	
-    	pg104500Dto.setSearchName(searchName);
-    	
-    	List<pg104500Dto> pnSearchDtoList = pg104500Service.selectSearchName(pg104500Dto);
-    	
-    	model.addAttribute("pnSearch", pnSearchDtoList);
-    	Map<String, Object> result = new HashMap<String, Object>();
-    	
-    	for(int i=0; i<pnSearchDtoList.size(); i++) {
-    		result.put(pnSearchDtoList.get(i).getPernNo(), pnSearchDtoList.get(i).getName());
-    	}
-    	
-    	return result;
-	}
-	
-	@RequestMapping(value = "/gbn10/pg104500Search.do", method = { RequestMethod.POST })
-	public String pg104500Search(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletRequest request, HttpServletResponse reponse, HttpSession session, Model model) throws Exception {
-		
-		pg104500Dto pernInfoDto = pg104500Service.selectPernInfo(pg104500Dto.getPernNum());
-		model.addAttribute("pernInfo", pernInfoDto);
-		
-		return "gbn10/pg104500";
-	}
 }
 	

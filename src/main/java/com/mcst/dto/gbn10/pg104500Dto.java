@@ -9,11 +9,16 @@ public class pg104500Dto implements Serializable{
 	 */
 	private static final long serialVersionUID = 3091850674883425610L;
 
+	private int rnum;
 	private String pernNo;
 	private String name;
 	private String sexCode;
 	private String deptCode;
 	private String deptName;
+	private String deptCode1;
+	private String deptName1;
+	private String deptCode2;
+	private String deptName2;
 	private String postCode;
 	private String postName;
 	private String joinCode;
@@ -32,11 +37,9 @@ public class pg104500Dto implements Serializable{
 	private String mutualYn;
 	private String payGrade;
 	private String payName;
-	private String detailCode;
-	private String detailCodeName;
+	private String detailCode = "1";
+
 	
-	private String searchName;
-	private String pernNum;
 	
 	private String searchWorkGubn1;
 	private String searchWorkGubn2;
@@ -45,6 +48,12 @@ public class pg104500Dto implements Serializable{
 	private String searchWorkGubn5;
 	
 	
+	public int getRnum() {
+		return rnum;
+	}
+	public void setRnum(int rnum) {
+		this.rnum = rnum;
+	}
 	public String getPernNo() {
 		return pernNo;
 	}
@@ -190,27 +199,29 @@ public class pg104500Dto implements Serializable{
 	public void setDetailCode(String detailCode) {
 		this.detailCode = detailCode;
 	}
-	public String getDetailCodeName() {
-		return detailCodeName;
+	public String getDeptCode1() {
+		return deptCode1;
 	}
-	public void setDetailCodeName(String detailCodeName) {
-		this.detailCodeName = detailCodeName;
+	public void setDeptCode1(String deptCode1) {
+		this.deptCode1 = deptCode1;
 	}
-	
-	
-	
-	
-	public String getSearchName() {
-		return searchName;
+	public String getDeptCode2() {
+		return deptCode2;
 	}
-	public void setSearchName(String searchName) {
-		this.searchName = searchName;
+	public void setDeptCode2(String deptCode2) {
+		this.deptCode2 = deptCode2;
 	}
-	public String getPernNum() {
-		return pernNum;
+	public String getDeptName1() {
+		return deptName1;
 	}
-	public void setPernNum(String pernNum) {
-		this.pernNum = pernNum;
+	public void setDeptName1(String deptName1) {
+		this.deptName1 = deptName1;
+	}
+	public String getDeptName2() {
+		return deptName2;
+	}
+	public void setDeptName2(String deptName2) {
+		this.deptName2 = deptName2;
 	}
 	
 	
@@ -248,5 +259,6 @@ public class pg104500Dto implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
 	
 }

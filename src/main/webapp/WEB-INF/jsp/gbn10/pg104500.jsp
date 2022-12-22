@@ -3,6 +3,7 @@
 <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <!DOCTYPE html>
 <html>
@@ -29,96 +30,18 @@
 <body>
 <script language="javascript">
 
-$(document).ready(function() {
-	$("#grid").jqGrid({
-	   	url:"<c:url value='/gbn10/pg104500List.ajax' />",
-	   	mtype: "POST",
-		datatype: "json",
-		locale : "kr",
-		/* postData : {'searchMenuGubn1':'10'}, */
-		jsonReader : {
-			root: "rowData",
-			repeatitems: false
-		},
-		colModel:[
-			{label:'사번', name:'pernNo', align:'center', width:100},
-			{label:'검색코드', name:'pernNum', align:'center', hidden:true},
-			{label:'성명', name:'name', align:'center', width:100},
-			{label:'성별', name:'sexCode', align:'center', width:50},
-			{label:'부서코드', name:'deptCode', align:'center', hidden:true},
-			{label:'부서', name:'deptName', align:'center', width:200},
-			{label:'직위코드', name:'postCode', align:'center', hidden:true},
-			{label:'직위', name:'postName', align:'center', width:100},
-			{label:'직급코드', name:'payGrade', align:'center', hidden:true},
-			{label:'직급', name:'payName', align:'center', hidden:true},
-			{label:'입사구분코드', name:'joinCode', align:'center', hidden:true},
-			{label:'입사구분', name:'joinName', align:'center', width:100},
-			{label:'사원구분코드', name:'employType', align:'center', hidden:true},
-			{label:'사원구분', name:'employName', align:'center', width:100},
-			{label:'급여구분', name:'salaryName', align:'center'},
-			{label:'급여구분코드', name:'salaryCode', align:'center', hidden:true},
-			{label:'연봉구분', name:'wagesAmt', align:'center', hidden:true},
-			{label:'연봉구분', name:'stringWagesAmt', align:'center', width:100},
-			{label:'입사일자', name:'joinDate', align:'center', width:150},
-			{label:'퇴사일자', name:'retrDate', align:'center', width:150},
-			{label:'근무지코드', name:'workArea', align:'center', hidden:true},
-			{label:'근무지', name:'workAreaName', align:'center', width:100},
-			{label:'핸드폰', name:'phoneNo', align:'center', width:150},
-			{label:'상조회', name:'mutualYn', align:'center', width:50},
-			{label:'재퇴직코드', name:'detailCode', align:'center', hidden:true},
-	   	],
-	   	loadonce: true,
-	   	sortable : true,
-	   	showpage : false,
-        rownumbers : true,
-	   	rowNum: 9007199254740992,
-	   	width: $('#contents').width() -42,
-        height: 460,
-	   	beforeRequest : function () {loadingOn();},
-	   	loadComplete: function (data) {if($('#grid').getGridParam("records")== 0) alert('조회된 내용이 없습니다.');loadingOff();}
-	   
-	});
-	goReload();
-});
-
-$(window).bind('resize', function() {
-	$("#grid").setGridWidth($('#contents').width() -42, true);
-}).trigger('resize');
-
+/* 검색 기능 */
 function goReload() {
-	$('[id=inputForm] #detailCode').val($('#detailCode').val());
-	$('[id=inputForm] #deptCode').val($('#deptCode').val());
-	$('[id=inputForm] #postCode').val($('#postCode').val());
-	$('[id=inputForm] #payGrade').val($('#payGrade').val());
-	$('[id=inputForm] #salaryCode').val($('#salaryCode').val());
-	$('[id=inputForm] #pernNo').val($('#pernNo').val());
-	
-	var formData = $('#inputForm').serializeArray();
-
-	console.log(formData);
-	
-	$('#grid').clearGridData();
-	$('#grid').setGridParam({datatype : "json",
-		                     postData : formData }).trigger("reloadGrid");
+	document.listForm.action = "<c:url value='/gbn10/pg104500.do'/>";
+	document.listForm.submit();
 }
 
+/* 엑셀 다운로드 */
 function goExcel() {
-	goReload();
-	document.inputForm.action = "<c:url value='/gbn10/pg104500Excel.do'/>";
-	document.inputForm.submit();
+	document.listForm.action = "<c:url value='/gbn10/pg104500Excel.do'/>";
+	document.listForm.submit();
+	
 }
-
-$( function() {
-    $( "#pernNo" ).autocomplete({
-      source: "<c:url value='/pnSearch.ajax' />",
-      minLength: 1,
-      select: function( event, ui ) {
-        $('[id=inputForm] #pernNum').val(ui.item.value.substring(0,7));
-        $('#inputForm').attr("action", "<c:url value='/gbn10/pg104500Search.do'/>");
-        inputForm.submit();
-      }
-    });
-  });
 
 </script>
 </head>
@@ -138,88 +61,146 @@ $( function() {
 							</ul>
 						</div>
 					</div>
-					<h3>기본검색</h3>
-					<div class="section">
-						<div class="search_Area m_b_20">
-						    <form name="searchForm" id="searchForm" onsubmit="return false">
-                            <table>
-                                <colgroup>
-                                    <col style="width:7%" />
-                                    <col style="" />
-                                </colgroup>
-                                <tbody>
-                                    <tr>
-                                        <th>재/퇴직</th>
-                                        <td>
-                                            <label></label>
-                                              <select id="detailCode" name="detailCode">
-								     	   	  	<option value="" selected>--선택--</option>
-                                        		<option value="1">재직</option>
-                                        		<option value="2">퇴직</option>
-								      		  </select>
-                                        </td>
-                                        <th>부서</th>
-                                        <td>
-                                        	<label></label>
-                                        		<select id="deptCode" name="deptCode">
-                                        		<option value="">전체</option>
-                                        		<c:forEach var="gbnList" items="${gbnList}" varStatus="status">
-                                        			<option value="${gbnList.deptCode}">${gbnList.deptName}</option>
-                                        		</c:forEach>
-                                        		</select>
-                                        </td>
-                                        
-                                        <th>직위</th>
-                                        <td>
-                                        	<label></label>
-                                        		<select id="postCode" name="postCode">
-                                        		<option value="">전체</option>
-                                        		<c:forEach var="gbnList2" items="${gbnList2}" varStatus="status">
-                                        			<option value="${gbnList2.postCode}">${gbnList2.postName}</option>
-                                        		</c:forEach>
-                                        		</select>
-                                        </td>
-                                        
-                                        <th>직급</th>
-                                        <td>
-                                        	<label></label>
-                                        		<select id="payGrade" name="payGrade">
-                                        		<option value="">전체</option>
-                                        		<c:forEach var="gbnList3" items="${gbnList3}" varStatus="status">
-                                        			<option value="${gbnList3.payGrade}">${gbnList3.payName}</option>
-                                        		</c:forEach>
-                                        		</select>
-                                        </td>
-                                        
-                                        <th>급여구분</th>
-                                        <td>
-                                        	<label></label>
-                                        		<select id="salaryCode" name="salaryCode">
-                                        		<option value="">전체</option>
-                                        		<c:forEach var="gbnList4" items="${gbnList4}" varStatus="status">
-                                        			<option value="${gbnList4.salaryCode}">${gbnList4.salaryName}</option>
-                                        		</c:forEach>
-                                        		</select>
-                                        </td>
-                                        <th>사번/성명</th>
-                                        <td>
-                                        	<c:if test="${pernInfo == null}">
+					
+					<form:form modelAttribute="pg104500Dto" id="listForm" name="listForm" method="post">
+						<h3>기본검색</h3>
+						<div class="section">
+							<div class="search_Area m_b_20">
+	                            <table>
+	                                <colgroup>
+	                                    <col style="width:7%" />
+	                                    <col style="" />
+	                                </colgroup>
+	                                <tbody>
+	                                    <tr>
+	                                        <th>재/퇴직</th>
+	                                        <td>
+	                                            <label></label>
+	                                              <form:select path="detailCode" value="${searchFormData.detailCode}">
+									     	   	  	<form:option value="0" label="전체" />
+	                                        		<form:option value="1" label="재직" />
+	                                        		<form:option value="2" label="퇴직" />
+									      		  </form:select>
+	                                        </td>
+	                                        <th>부서</th>
+	                                        <td>
+	                                        	<label></label>
+	                                        		<form:select path="deptCode" value="${searchFormData.deptCode}">
+														<ul class="deptList1">
+															<li>
+																<ul class="hidden">
+																	<form:option value="" label="전체" />
+																	<c:forEach var="deptList1" items="${deptList1}" varStatus="status">
+																		<li>
+																			<form:option value="${deptList1.deptCode1}" label="${deptList1.deptName1}" />
+																			<ul class="deptList3">
+																				<c:forEach var="deptList2" items="${deptList2}" varStatus="status">
+																					<c:if test="${deptList1.deptCode1 == deptList2.deptCode1}">
+																						<li>
+																							<form:option value="${deptList2.deptCode2}" label="ㄴ ${deptList2.deptName2}" />
+																						</li>
+																					</c:if>
+																				</c:forEach>
+																			</ul>
+																		</li>
+																	</c:forEach>
+																</ul>
+															</li>
+														</ul>
+	                                        		</form:select>
+	                                        </td>
+	                                        
+	                                        <th>직위</th>
+	                                        <td>
+	                                        	<label></label>
+	                                        		<form:select path="postCode" value="${searchFormData.postCode}">
+	                                        			<form:option value="" label="전체" />
+		                                        		<c:forEach var="gbnList2" items="${gbnList2}" varStatus="status">
+		                                        			<form:option value="${gbnList2.postCode}" label="${gbnList2.postName}" />
+		                                        		</c:forEach>
+	                                        		</form:select>
+	                                        </td>
+                                       <!-- </tr>
+	                                    <tr> -->
+	                                        <th>직급</th>
+	                                        <td>
+	                                        	<label></label>
+	                                        		<form:select path="payGrade" value="${searchFormData.payGrade}">
+	                                        			<form:option value="" label="전체" />	
+		                                        		<c:forEach var="gbnList3" items="${gbnList3}" varStatus="status">
+		                                        			<form:option value="${gbnList3.payGrade}" label="${gbnList3.payName}" />
+		                                        		</c:forEach>
+	                                        		</form:select>
+	                                        </td>
+
+	                                        <th>급여구분</th>
+	                                        <td>
+	                                        	<label></label>
+	                                        		<form:select path="salaryCode" value="${searchFormData.salaryCode}">
+	                                        			<form:option value="" label="전체" />
+		                                        		<c:forEach var="gbnList4" items="${gbnList4}" varStatus="status">
+		                                        			<form:option value="${gbnList4.salaryCode}" label="${gbnList4.salaryName}" />
+		                                        		</c:forEach>
+	                                        		</form:select>
+	                                        </td>
+	                                        <th>사번/성명</th>
+	                                        <td>
 	                                        	<label></label>
 	                                        	<input type="text" id="pernNo" name="pernNo">
-                                        	</c:if>
-                                        	<c:if test="${pernInfo != null}">
-                                        		<label></label>
-                                        		<input type="text" id="pernNo" name="pernNo" value="${pernInfo.pernNo}">
-                                        	</c:if>
-                                        	<a href="javascript:goReload()" class="btn_small bt_grey">검색</a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </form>
-                        </div>
-						<div><table id="grid"></table></div>
-                    </div>
+	                                        	<a href="javascript:goReload()" class="btn_small bt_grey">검색</a>
+	                                        </td>
+	                                    </tr>
+	                                </tbody>
+	                            </table>
+	                        </div>
+							<div class="section">
+	                        	<div id="table-scroll" class="table-scroll" style="height:577px; margin:0;">
+									<table class="row_table">
+										<thead>
+											<tr>
+												<th>No</th>
+		                                        <th>사번</th>
+		                                        <th>성명</th>
+		                                        <th>성별</th>
+		                                        <th>부서</th>
+		                                        <th>직위</th>
+		                                        <th>입사구분</th>
+		                                        <th>사원구분</th>
+		                                        <th>급여구분</th>
+		                                        <th>연봉구분</th>
+		                                        <th>입사일자</th>
+		                                        <th>퇴사일자</th>
+		                                        <th>근무지</th>
+		                                        <th>핸드폰</th>
+		                                        <th>상조회</th>
+											</tr>
+										</thead>
+										<tbody>
+											<c:forEach var="result" items="${pernList}" varStatus="status">
+												<tr>
+													<td><c:out value="${result.rnum}" /></td>
+													<td><c:out value="${result.pernNo}" /></td>
+													<td><c:out value="${result.name}" /></td>
+													<td><c:out value="${result.sexCode}" /></td>
+													<td><c:out value="${result.deptName}" /></td>
+													<td><c:out value="${result.postName}" /></td>
+													<td><c:out value="${result.joinName}" /></td>
+													<td><c:out value="${result.employName}" /></td>
+													<td><c:out value="${result.salaryName}" /></td>
+													<td><c:out value="${result.stringWagesAmt}" /></td>
+													<td><c:out value="${result.joinDate}" /></td>
+													<td><c:out value="${result.retrDate}" /></td>
+													<td><c:out value="${result.workAreaName}" /></td>
+													<td><c:out value="${result.phoneNo}" /></td>
+													<td><c:out value="${result.mutualYn}" /></td>
+												</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+								</div>
+							</div>
+	                    </div>
+                    </form:form>
                     <div class="btn_group">
                         <div class="right">
                             <a class="btn_large bt_blue" href="javascript:goExcel()">엑셀</a>
@@ -228,33 +209,7 @@ $( function() {
 				</div>
                 <jsp:include page="/WEB-INF/jsp/bottom.jsp" flush="true"/>
 			</div>
-			<form name="inputForm" id="inputForm" method="post">
-				<input type="hidden" name="pernNo" id="pernNo" value="">
-				<input type="hidden" name="name" id="name">
-				<input type="hidden" name="sexCode" id="sexCode">
-				<input type="hidden" name="deptCode" id="deptCode" value="150100">
-				<input type="hidden" name="deptName" id="deptName">
-				<input type="hidden" name="postCode" id="postCode" value="60">
-				<input type="hidden" name="postName" id="postName">
-				<input type="hidden" name="payGrade" id="payGrade" value="01">
-				<input type="hidden" name="payName" id="payName">
-				<input type="hidden" name="joinCode" id="joinCode">
-				<input type="hidden" name="joinName" id="joinName">
-				<input type="hidden" name="employType" id="employType">
-				<input type="hidden" name="employName" id="employName">
-				<input type="hidden" name="salaryCode" id="salaryCode" value="01">
-				<input type="hidden" name="salaryName" id="salaryName">
-				<input type="hidden" name="stringWagesAmt" id="stringWagesAmt">
-				<input type="hidden" name="wagesAmt" id="wagesAmt">
-				<input type="hidden" name="joinDate" id="joinDate">
-				<input type="hidden" name="retrDate" id="retrDate">
-				<input type="hidden" name="workArea" id="workArea">
-				<input type="hidden" name="workAreaName" id="workAreaName">
-				<input type="hidden" name="phoneNo" id="phoneNo">
-				<input type="hidden" name="mutualYn" id="mutualYn">
-				<input type="hidden" name="detailCode" id="detailCode">
-				<input type="hidden" name="pernNum" id="pernNum" value="${pernInfo.pernNo}">
-			</form>
+
         </div>
     </div>
 </body>

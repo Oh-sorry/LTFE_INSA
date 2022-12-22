@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pg109503Sql">
+
+	<select id="selectPg109503OrgList" parameterType="com.mcst.dto.gbn10.pg109503Dto" resultType="com.mcst.dto.gbn10.pg109503Dto">
+		SELECT ROWNUM AS rnum,
+		       A.PERN_NO,
+		       A.NAME,
+		       B.DETAIL_CODE_NAME AS deptFullName,
+		       SUBSTR(B.DETAIL_CODE_NAME, 0, INSTR(B.DETAIL_CODE_NAME, ' ')) AS deptName1,
+		       SUBSTR(B.DETAIL_CODE_NAME, INSTR(B.DETAIL_CODE_NAME, ' ') + 1) AS deptName2,
+		       C.DETAIL_CODE_NAME  AS postCode,
+		       IFNULL(D.DETAIL_CODE_NAME, '-')  AS payGrade,
+		       CASE WHEN IFNULL(A.PAY_GRADE2, '') = '' THEN '-' ELSE A.PAY_GRADE2 + '호봉' END AS payGrade2 ,
+		       IFNULL(E.DETAIL_CODE_NAME, '-')  AS joinCode,
+		       IFNULL(F.DETAIL_CODE_NAME, '-')  AS employType,
+		       G.DETAIL_CODE_NAME  AS salaryCode,
+		       A.WAGES_AMT,
+		       A.JOIN_DATE,
+		       IFNULL(A.RETR_DATE, '-') AS retrDate,
+		       H.DETAIL_CODE_NAME AS workArea,
+		       IFNULL(A.PAY_GRADE_DATE, '-') AS payGradeDate,
+		       IFNULL(A.PAY_GRADE2_DATE, '-') AS payGradeDate2,		       
+		       A.TELEPHON AS telephone,
+		       A.PHONE_NO
+		FROM   HPA100T A,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H002'
+		       )
+		       B,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H005'
+		       )
+		       C,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H004'
+		       )
+		       D,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H012'
+		       )
+		       E,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H024'
+		       )
+		       F,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H028'
+		       )
+		       G,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H003'
+		       )
+		       H
+		WHERE  A.DEPT_CODE = B.DETAIL_CODE (+)
+		AND    A.POST_CODE = C.DETAIL_CODE (+)
+		AND    A.PAY_GRADE = D.DETAIL_CODE (+)
+		AND    A.JOIN_CODE = E.DETAIL_CODE (+)
+		AND    A.EMPLOY_TYPE = F.DETAIL_CODE (+)
+		AND    A.SALARY_CODE = G.DETAIL_CODE (+)
+		AND    A.WORK_AREA = H.DETAIL_CODE (+)
+			<if test="searchJoinGbn1 != null and searchJoinGbn1 == 1">
+				AND A.RETR_DATE IS NULL
+			</if>
+			<if test="searchJoinGbn1 != null and searchJoinGbn1 == 2">
+				AND A.RETR_DATE IS NOT NULL
+			</if>
+			<if test="searchKeyword != null and searchKeyword != ''">
+				AND B.DETAIL_CODE_NAME = #{searchKeyword}
+			</if>
+	</select>
+	
+	<select id="selectPg109503DeptList1" parameterType="com.mcst.dto.gbn10.pg109503Dto" resultType="com.mcst.dto.gbn10.pg109503Dto">
+		SELECT   DENSE_RANK() OVER (ORDER BY SUBSTR(DETAIL_CODE, 1, 2)) AS rank, DETAIL_CODE_NAME AS deptList1
+		FROM     BCO100T
+		WHERE    COM_CODE                   ='H002'
+		AND      DETAIL_CODE_NAME IS NOT NULL
+		AND		 SUBSTR(DETAIL_CODE, 1, 2) != '76'
+		GROUP BY SUBSTR(DETAIL_CODE,1,2)
+		ORDER BY DETAIL_CODE
+	</select>
+	
+	<select id="selectPg109503DeptList2" parameterType="com.mcst.dto.gbn10.pg109503Dto" resultType="com.mcst.dto.gbn10.pg109503Dto">
+		SELECT   DENSE_RANK() OVER (ORDER BY SUBSTR(DETAIL_CODE, 1, 2)) AS rank, SUBSTR(DETAIL_CODE_NAME, INSTR(DETAIL_CODE_NAME, ' ') + 1) AS deptList2
+		FROM     BCO100T
+		WHERE    COM_CODE            = 'H002'
+		AND      DETAIL_CODE_NAME LIKE '% %'
+		ORDER BY DETAIL_CODE
+	</select>
+	
+	<select id="excelList" parameterType="com.mcst.dto.gbn10.pg109503Dto" resultType="egovMap">
+		SELECT ROWNUM AS rnum,
+		       A.PERN_NO,
+		       A.NAME,
+		       IFNULL(B.DETAIL_CODE_NAME, '') AS deptFullName,
+		       IFNULL(SUBSTR(B.DETAIL_CODE_NAME, 0, INSTR(B.DETAIL_CODE_NAME, ' ')), '') AS deptName1,
+		       IFNULL(SUBSTR(B.DETAIL_CODE_NAME, INSTR(B.DETAIL_CODE_NAME, ' ') + 1), '') AS deptName2,
+		       C.DETAIL_CODE_NAME  AS postCode,
+		       IFNULL(D.DETAIL_CODE_NAME, '-')  AS payGrade,
+		       CASE WHEN IFNULL(A.PAY_GRADE2, '') = '' THEN '-' ELSE A.PAY_GRADE2 + '호봉' END AS payGrade2 ,
+		       IFNULL(E.DETAIL_CODE_NAME, '-')  AS joinCode,
+		       IFNULL(F.DETAIL_CODE_NAME, '-')  AS employType,
+		       G.DETAIL_CODE_NAME  AS salaryCode,
+		       A.WAGES_AMT,
+		       A.JOIN_DATE,
+		       IFNULL(A.RETR_DATE, '-') AS retrDate,
+		       IFNULL(H.DETAIL_CODE_NAME, '') AS workArea,
+		       IFNULL(A.PAY_GRADE_DATE, '-') AS payGradeDate,
+		       IFNULL(A.PAY_GRADE2_DATE, '-') AS payGradeDate2,		       
+		       IFNULL(A.TELEPHON, '') AS telephone,
+		       IFNULL(A.PHONE_NO, '') AS phoneNo
+		FROM   HPA100T A,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H002'
+		       )
+		       B,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H005'
+		       )
+		       C,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H004'
+		       )
+		       D,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H012'
+		       )
+		       E,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H024'
+		       )
+		       F,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H028'
+		       )
+		       G,
+		       (SELECT DETAIL_CODE_NAME,
+		               DETAIL_CODE
+		       FROM    BCO100T
+		       WHERE   COM_CODE = 'H003'
+		       )
+		       H
+		WHERE  A.DEPT_CODE = B.DETAIL_CODE (+)
+		AND    A.POST_CODE = C.DETAIL_CODE (+)
+		AND    A.PAY_GRADE = D.DETAIL_CODE (+)
+		AND    A.JOIN_CODE = E.DETAIL_CODE (+)
+		AND    A.EMPLOY_TYPE = F.DETAIL_CODE (+)
+		AND    A.SALARY_CODE = G.DETAIL_CODE (+)
+		AND    A.WORK_AREA = H.DETAIL_CODE (+)
+			<if test="searchJoinGbn1 != null and searchJoinGbn1 == 1">
+				AND A.RETR_DATE IS NULL
+			</if>
+			<if test="searchJoinGbn1 != null and searchJoinGbn1 == 2">
+				AND A.RETR_DATE IS NOT NULL
+			</if>
+			<if test="searchKeyword != null and searchKeyword != ''">
+				AND B.DETAIL_CODE_NAME = #{searchKeyword}
+			</if>
+	</select>
+	
+</mapper>
