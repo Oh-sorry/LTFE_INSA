@@ -28,21 +28,19 @@
 
 </head>
 <body>
-<script language="javascript">
+ <script language="javascript">
 
 /* 검색 기능 */
 function goReload() {
-	document.listForm.action = "<c:url value='/gbn10/pg104500.do'/>";
+	document.listForm.action = "<c:url value='/gbn10/pg105500.do'/>";
 	document.listForm.submit();
 }
-
 /* 엑셀 다운로드 */
 function goExcel() {
-	document.listForm.action = "<c:url value='/gbn10/pg104500Excel.do'/>";
+	document.listForm.action = "<c:url value='/gbn10/pg105500Excel.do'/>";
 	document.listForm.submit();
 	
 }
-
 </script>
 </head>
 <body>
@@ -57,13 +55,13 @@ function goExcel() {
 							<ul>
 								<li><a href="#"><img src="<c:url value='/images/ico_home.png' />" alt="" /></a></li>
 								<li><a href="#">인사관리</a></li>
-								<li><a href="#">기본검색</a></li>
+								<li><a href="#">경력 현황</a></li>
 							</ul>
 						</div>
 					</div>
 					
-					<form:form modelAttribute="pg104500Dto" id="listForm" name="listForm" method="post">
-						<h3>기본검색</h3>
+					<form:form modelAttribute="pg105500Dto" id="listForm" name="listForm" method="post">
+						<h3>경력 현황</h3>
 						<div class="section">
 							<div class="search_Area m_b_20">
 	                            <table>
@@ -73,15 +71,6 @@ function goExcel() {
 	                                </colgroup>
 	                                <tbody>
 	                                    <tr>
-	                                        <th>재/퇴직</th>
-	                                        <td>
-	                                            <label></label>
-	                                              <form:select path="detailCode" value="${searchFormData.detailCode}">
-									     	   	  	<form:option value="0" label="전체" />
-	                                        		<form:option value="1" label="재직" />
-	                                        		<form:option value="2" label="퇴직" />
-									      		  </form:select>
-	                                        </td>
 	                                        <th>부서</th>
 	                                        <td>
 	                                        	<label></label>
@@ -97,7 +86,7 @@ function goExcel() {
 																				<c:forEach var="deptList2" items="${deptList2}" varStatus="status">
 																					<c:if test="${deptList1.deptCode1 == deptList2.deptCode1}">
 																						<li>
-																							<form:option value="${deptList2.deptCode2}" label="  ↳     ${deptList2.deptName2}" />
+																							<form:option value="${deptList2.deptCode2}" label="  ↳    ${deptList2.deptName2}" />
 																						</li>
 																					</c:if>
 																				</c:forEach>
@@ -120,15 +109,14 @@ function goExcel() {
 		                                        		</c:forEach>
 	                                        		</form:select>
 	                                        </td>
-                                       <!-- </tr>
-	                                    <tr> -->
-	                                        <th>직급</th>
+	                                    
+	                                        <th>근무처</th>
 	                                        <td>
 	                                        	<label></label>
-	                                        		<form:select path="payGrade" value="${searchFormData.payGrade}">
+	                                        		<form:select path="workArea" value="${searchFormData.workArea}">
 	                                        			<form:option value="" label="전체" />	
 		                                        		<c:forEach var="gbnList3" items="${gbnList3}" varStatus="status">
-		                                        			<form:option value="${gbnList3.payGrade}" label="${gbnList3.payName}" />
+		                                        			<form:option value="${gbnList3.workArea}" label="${gbnList3.workAreaName}" />
 		                                        		</c:forEach>
 	                                        		</form:select>
 	                                        </td>
@@ -143,7 +131,13 @@ function goExcel() {
 		                                        		</c:forEach>
 	                                        		</form:select>
 	                                        </td>
-	                                        <th>사번/성명</th>
+	                                        
+	                                        <th>성명</th>
+	                                        <td>
+	                                        	<label></label>
+	                                        	<input type="text" id="name" name="name">
+	                                        </td>
+	                                        <th>사번</th>
 	                                        <td>
 	                                        	<label></label>
 	                                        	<input type="text" id="pernNo" name="pernNo">
@@ -161,18 +155,17 @@ function goExcel() {
 												<th>No</th>
 		                                        <th>사번</th>
 		                                        <th>성명</th>
-		                                        <th>성별</th>
 		                                        <th>부서</th>
 		                                        <th>직위</th>
-		                                        <th>입사구분</th>
-		                                        <th>사원구분</th>
 		                                        <th>급여구분</th>
-		                                        <th>연봉구분</th>
-		                                        <th>입사일자</th>
-		                                        <th>퇴사일자</th>
-		                                        <th>근무지</th>
-		                                        <th>핸드폰</th>
-		                                        <th>상조회</th>
+		                                        <th>직급</th>
+		                                        <th>호봉</th>
+		                                        <th>나이</th>
+		                                        <th>입사일</th>
+		                                        <th>승급일</th>
+		                                        <th>승호일</th>
+		                                        <th>경력시작일</th>
+		                                        <th>경력</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -181,18 +174,17 @@ function goExcel() {
 													<td><c:out value="${result.rnum}" /></td>
 													<td><c:out value="${result.pernNo}" /></td>
 													<td><c:out value="${result.name}" /></td>
-													<td><c:out value="${result.sexCode}" /></td>
 													<td><c:out value="${result.deptName}" /></td>
 													<td><c:out value="${result.postName}" /></td>
-													<td><c:out value="${result.joinName}" /></td>
-													<td><c:out value="${result.employName}" /></td>
 													<td><c:out value="${result.salaryName}" /></td>
-													<td><c:out value="${result.stringWagesAmt}" /></td>
+													<td><c:out value="${result.payName}" /></td>
+													<td><c:out value="${result.hobong}" /></td>
+													<td><c:out value="${result.age}" /></td>
 													<td><c:out value="${result.joinDate}" /></td>
-													<td><c:out value="${result.retrDate}" /></td>
-													<td><c:out value="${result.workAreaName}" /></td>
-													<td><c:out value="${result.phoneNo}" /></td>
-													<td><c:out value="${result.mutualYn}" /></td>
+													<td><c:out value="${result.payGradeDate}" /></td>
+													<td><c:out value="${result.payGrade2Date}" /></td>
+													<td><c:out value="${result.careerSDate}" /></td>
+													<td><c:out value="${result.career}" /></td>
 												</tr>
 											</c:forEach>
 										</tbody>

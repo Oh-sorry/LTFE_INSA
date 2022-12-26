@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pg105500Sql">
+
+	<select id="selectPg105500DeptList1" parameterType="com.mcst.dto.gbn10.pg105500Dto" resultType="com.mcst.dto.gbn10.pg105500Dto">
+		SELECT   SUBSTR(DETAIL_CODE, 0, 2) AS dept_code1,
+		         DETAIL_CODE_NAME          AS dept_name1
+		FROM     BCO100T
+		WHERE    COM_CODE                   ='H002'
+		AND      DETAIL_CODE_NAME IS NOT NULL
+		AND      SUBSTR(DETAIL_CODE, 1, 2) != '76'
+		GROUP BY SUBSTR(DETAIL_CODE,1,2)
+		ORDER BY DETAIL_CODE
+	</select>
+	
+	<select id="selectPg105500DeptList2" parameterType="com.mcst.dto.gbn10.pg105500Dto" resultType="com.mcst.dto.gbn10.pg105500Dto">
+		SELECT   SUBSTR(DETAIL_CODE, 0, 2)                                  AS dept_code1,
+		         DETAIL_CODE                                                AS dept_code2,
+		         SUBSTR(DETAIL_CODE_NAME, INSTR(DETAIL_CODE_NAME, ' ') + 1) AS dept_name2
+		FROM     BCO100T
+		WHERE    COM_CODE            = 'H002'
+		AND      DETAIL_CODE_NAME LIKE '% %'
+		ORDER BY DETAIL_CODE
+	</select>
+
+	<select id="selectPg105500GbnList2" parameterType="com.mcst.dto.gbn10.pg105500Dto" resultType="com.mcst.dto.gbn10.pg105500Dto">
+		SELECT 
+		       a.post_code,
+		       b.detail_code_name as post_name
+		FROM   hpa100t a,
+		       (SELECT detail_code, detail_code_name
+		       FROM    bco100t
+		       WHERE   bco100t.com_code = 'H005'
+		       ) b
+		WHERE  a.post_code   = b.detail_code (+)
+		GROUP BY a.post_code
+	</select>
+	
+	<select id="selectPg105500GbnList3" parameterType="com.mcst.dto.gbn10.pg105500Dto" resultType="com.mcst.dto.gbn10.pg105500Dto">
+		SELECT   a.work_area,
+		         f.detail_code_name AS work_area_name
+		FROM     hpa100t a,
+		         (SELECT detail_code, detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H003'
+		         )
+		         f
+		WHERE    a.work_area                  = f.detail_code (+)
+		AND      f.detail_code_name IS NOT NULL
+		GROUP BY a.work_area;
+	</select>
+	
+	<select id="selectPg105500GbnList4" parameterType="com.mcst.dto.gbn10.pg105500Dto" resultType="com.mcst.dto.gbn10.pg105500Dto">
+		SELECT 
+		       a.salary_code,
+		       e.detail_code_name as salary_name
+		FROM   hpa100t a,
+		       (SELECT detail_code, detail_code_name
+		       FROM    bco100t
+		       WHERE   bco100t.com_code = 'H028'
+		       ) e
+		WHERE  a.salary_code = e.detail_code (+)
+		GROUP BY a.salary_code
+	</select>
+
+	<select id="selectPg105500List" parameterType="com.mcst.dto.gbn10.pg105500Dto" resultType="com.mcst.dto.gbn10.pg105500Dto">
+		SELECT   ROWNUM AS rnum,
+		         a.pern_no,
+		         A.NAME,
+		         b.DETAIL_CODE AS dept_code,
+		         a.dept_name,
+		         a.post_code,
+		         c.detail_code_name AS post_name,
+		         a.salary_code,
+		         d.detail_code_name AS salary_name,
+		         a.pay_grade,
+		         e.detail_code_name                                        AS pay_name,
+		         (YEAR(NOW()) + 1 - SUBSTR(AESDECRYPT(a.birt_date), 0, 4)) AS age,
+		         a.work_area,
+		         f.detail_code_name AS work_area_name,
+		         a.join_date,
+		         a.pay_grade_date,
+		         a.pay_grade2_date,
+		         a.career_s_date,
+		         YEAR(DATE_ADD(SYSDATE, INTERVAL (-(YEAR(DECODE(a.career_s_date, null, a.join_date, a.career_s_date)))) YEAR)) AS career_year,
+         		 MONTH(DATE_ADD(SYSDATE, INTERVAL (-(MONTH(DECODE(a.career_s_date, null, a.join_date, a.career_s_date)))) MONTH)) AS career_month
+		FROM     hpa100t a,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H002'
+		         )
+		         b,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H005'
+		         )
+		         c,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H028'
+		         )
+		         d,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H004'
+		         )
+		         e,
+		         (SELECT *
+		         FROM    bco100t
+		         WHERE   com_code = 'H003'
+		         )
+		         f
+		WHERE    a.dept_code   = b.DETAIL_CODE (+)
+		AND      a.post_code   = c.DETAIL_CODE (+)
+		AND      a.salary_code = d.DETAIL_CODE (+)
+		AND      a.pay_grade   = e.DETAIL_CODE (+)
+		AND      a.work_area   = f.detail_code (+)
+		<if test="deptCode != null and deptCode != ''">
+			AND (SUBSTR(a.dept_code, 0, 2) = #{deptCode} OR a.dept_code = #{deptCode})
+		</if>
+		<if test="postCode != null and postCode != ''">
+			AND a.post_code = #{postCode}
+		</if>
+		<if test="workArea != null and workArea != ''">
+			AND a.work_area = #{workArea}
+		</if>
+		<if test="salaryCode != null and salaryCode != ''">
+			AND a.salary_code = #{salaryCode}
+		</if>
+		<if test="pernNo != null and pernNo != ''">
+			AND a.pern_no LIKE '%' || #{pernNo} || '%'
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name LIKE '%' || #{name} || '%'
+		</if>
+		ORDER BY a.pern_no
+	</select>
+	
+	<select id="excelDownload" parameterType="com.mcst.dto.gbn10.pg105500Dto" resultType="com.mcst.dto.gbn10.pg105500Dto">
+		SELECT   ROWNUM AS rnum,
+		         a.pern_no,
+		         A.NAME,
+		         b.DETAIL_CODE AS dept_code,
+		         a.dept_name,
+		         a.post_code,
+		         c.detail_code_name AS post_name,
+		         a.salary_code,
+		         d.detail_code_name AS salary_name,
+		         a.pay_grade,
+		         e.detail_code_name                                        AS pay_name,
+		         (YEAR(NOW()) + 1 - SUBSTR(AESDECRYPT(a.birt_date), 0, 4)) AS age,
+		         a.work_area,
+		         f.detail_code_name AS work_area_name,
+		         a.join_date,
+		         a.pay_grade_date,
+		         a.pay_grade2_date,
+		         a.career_s_date,
+		         YEAR(DATE_ADD(SYSDATE, INTERVAL (-(YEAR(DECODE(a.career_s_date, null, a.join_date, a.career_s_date)))) YEAR)) AS career_year,
+         		 MONTH(DATE_ADD(SYSDATE, INTERVAL (-(MONTH(DECODE(a.career_s_date, null, a.join_date, a.career_s_date)))) MONTH)) AS career_month
+		FROM     hpa100t a,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H002'
+		         )
+		         b,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H005'
+		         )
+		         c,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H028'
+		         )
+		         d,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H004'
+		         )
+		         e,
+		         (SELECT *
+		         FROM    bco100t
+		         WHERE   com_code = 'H003'
+		         )
+		         f
+		WHERE    a.dept_code   = b.DETAIL_CODE (+)
+		AND      a.post_code   = c.DETAIL_CODE (+)
+		AND      a.salary_code = d.DETAIL_CODE (+)
+		AND      a.pay_grade   = e.DETAIL_CODE (+)
+		AND      a.work_area   = f.detail_code (+)
+		<if test="deptCode != null and deptCode != ''">
+			AND (SUBSTR(a.dept_code, 0, 2) = #{deptCode} OR a.dept_code = #{deptCode})
+		</if>
+		<if test="postCode != null and postCode != ''">
+			AND a.post_code = #{postCode}
+		</if>
+		<if test="workArea != null and workArea != ''">
+			AND a.work_area = #{workArea}
+		</if>
+		<if test="salaryCode != null and salaryCode != ''">
+			AND a.salary_code = #{salaryCode}
+		</if>
+		<if test="pernNo != null and pernNo != ''">
+			AND a.pern_no LIKE '%' || #{pernNo} || '%'
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name LIKE '%' || #{name} || '%'
+		</if>
+		ORDER BY a.pern_no
+	</select>
+</mapper>
