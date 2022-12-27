@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pg107000Sql">
+
+	<select id="selectpg107000DtoYearList" parameterType="com.mcst.dto.gbn10.pg107000Dto" resultType="com.mcst.dto.gbn10.pg107000Dto">
+		SELECT   YEAR(a.join_date) AS join_year
+		FROM     hpa100t a
+		GROUP BY join_year
+		ORDER BY join_year DESC
+	</select>
+	
+	<select id="selectpg107000DtoMonthList" parameterType="com.mcst.dto.gbn10.pg107000Dto" resultType="com.mcst.dto.gbn10.pg107000Dto">
+		SELECT   SUBSTR(a.join_date, 5, 2) AS join_month
+		FROM     hpa100t a
+		GROUP BY join_month
+		ORDER BY join_month ASC
+	</select>
+
+	<select id="selectPg107000GbnJoinList" parameterType="com.mcst.dto.gbn10.pg107000Dto" resultType="com.mcst.dto.gbn10.pg107000Dto">
+		SELECT a.detail_code,
+		       a.detail_code_name
+		FROM   bco100t a
+		WHERE  a.com_code = 'H068'
+		AND    a.detail_code IN ('1',
+		                         '3')
+	</select>
+
+	<select id="selectPg107000List" parameterType="com.mcst.dto.gbn10.pg107000Dto" resultType="com.mcst.dto.gbn10.pg107000Dto">
+		SELECT   ROWNUM AS rnum,
+		         a.pern_no,
+		         A.NAME,
+		         b.DETAIL_CODE AS dept_code,
+		         a.dept_name,
+		         a.post_code,
+		         c.detail_code_name AS post_name,
+		         a.repre_num,
+		         a.pay_grade,
+		         d.detail_code_name AS pay_name,
+		         a.work_area,
+		         f.detail_code_name AS work_area_name,
+		         a.join_date,
+		         YEAR(a.join_date) AS join_year,
+		         MONTH(a.join_date) AS join_month,
+		         a.retr_date,
+		         YEAR(a.retr_date) AS retr_year,
+		         MONTH(a.retr_date) AS retr_month,
+		         a.kor_addr,
+		         a.salary_code,
+		         e.detail_code_name AS salary_name,
+		         a.wages_amt,
+		         CASE WHEN IFNULL(A.PAY_GRADE2, '') = '' THEN '' ELSE A.PAY_GRADE2 + '호봉' END AS payGrade2
+		FROM     hpa100t a,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H002'
+		         )
+		         b,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H005'
+		         )
+		         c,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H004'
+		         )
+		         d,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H028'
+		         )
+		         e,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		       	 FROM    bco100t
+		      	 WHERE   com_code = 'H003'
+		      	 ) f
+		WHERE    a.dept_code   = b.DETAIL_CODE (+)
+		AND      a.post_code   = c.DETAIL_CODE (+)
+		AND      a.pay_grade   = d.DETAIL_CODE (+)
+		AND      a.salary_code = e.DETAIL_CODE (+)
+		AND      a.work_area   = f.detail_code (+)
+		<if test="detailCode != null and detailCode == 1">
+			AND a.retr_date is NULL
+			<if test="joinYear != null and joinYear != ''">
+				AND SUBSTR(a.join_date, 0, 4) = #{joinYear}
+				<if test="joinMonth != null and joinMonth != ''">
+					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
+				</if>
+			</if>
+		</if>
+		<if test="detailCode != null and detailCode == 2">
+			AND a.retr_date is NOT NULL
+			<if test="joinYear != null and joinYear != ''">
+				AND SUBSTR(a.retr_date, 0, 4) = #{joinYear}
+				<if test="joinMonth != null and joinMonth != ''">
+					AND SUBSTR(a.retr_date, 5, 2) = #{joinMonth}
+				</if>
+			</if>
+		</if>
+		<if test="joinYear != null and joinYear != ''">
+			AND (SUBSTR(a.join_date, 0, 4) = #{joinYear} OR SUBSTR(a.retr_date, 0, 4) = #{joinYear})
+			<if test="joinMonth != null and joinMonth != ''">
+				AND (SUBSTR(a.join_date, 5, 2) = #{joinMonth} OR SUBSTR(a.retr_date, 5, 2) = #{joinMonth})
+			</if>
+		</if>
+		
+		ORDER BY a.pern_no;
+	
+	</select>
+	
+	<select id="excelDownload" parameterType="com.mcst.dto.gbn10.pg107000Dto" resultType="com.mcst.dto.gbn10.pg107000Dto">
+		SELECT   ROWNUM AS rnum,
+		         a.pern_no,
+		         A.NAME,
+		         b.DETAIL_CODE AS dept_code,
+		         a.dept_name,
+		         a.post_code,
+		         c.detail_code_name AS post_name,
+		         a.repre_num,
+		         a.pay_grade,
+		         d.detail_code_name AS pay_name,
+		         a.work_area,
+		         f.detail_code_name AS work_area_name,
+		         a.join_date,
+		         YEAR(a.join_date) AS join_year,
+		         MONTH(a.join_date) AS join_month,
+		         a.retr_date,
+		         YEAR(a.retr_date) AS retr_year,
+		         MONTH(a.retr_date) AS retr_month,
+		         a.kor_addr,
+		         a.salary_code,
+		         e.detail_code_name AS salary_name,
+		         a.wages_amt,
+		         CASE WHEN IFNULL(A.PAY_GRADE2, '') = '' THEN '' ELSE A.PAY_GRADE2 + '호봉' END AS payGrade2
+		FROM     hpa100t a,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H002'
+		         )
+		         b,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H005'
+		         )
+		         c,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H004'
+		         )
+		         d,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H028'
+		         )
+		         e,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		       	 FROM    bco100t
+		      	 WHERE   com_code = 'H003'
+		      	 ) f
+		WHERE    a.dept_code   = b.DETAIL_CODE (+)
+		AND      a.post_code   = c.DETAIL_CODE (+)
+		AND      a.pay_grade   = d.DETAIL_CODE (+)
+		AND      a.salary_code = e.DETAIL_CODE (+)
+		AND      a.work_area   = f.detail_code (+)
+		<if test="detailCode != null and detailCode == 1">
+			AND a.retr_date is NULL
+			<if test="joinYear != null and joinYear != ''">
+				AND SUBSTR(a.join_date, 0, 4) = #{joinYear}
+				<if test="joinMonth != null and joinMonth != ''">
+					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
+				</if>
+			</if>
+		</if>
+		<if test="detailCode != null and detailCode == 2">
+			AND a.retr_date is NOT NULL
+			<if test="joinYear != null and joinYear != ''">
+				AND SUBSTR(a.retr_date, 0, 4) = #{joinYear}
+				<if test="joinMonth != null and joinMonth != ''">
+					AND SUBSTR(a.retr_date, 5, 2) = #{joinMonth}
+				</if>
+			</if>
+		</if>
+		<if test="joinYear != null and joinYear != ''">
+			AND (SUBSTR(a.join_date, 0, 4) = #{joinYear} OR SUBSTR(a.retr_date, 0, 4) = #{joinYear})
+			<if test="joinMonth != null and joinMonth != ''">
+				AND (SUBSTR(a.join_date, 5, 2) = #{joinMonth} OR SUBSTR(a.retr_date, 5, 2) = #{joinMonth})
+			</if>
+		</if>
+		
+		ORDER BY a.pern_no;
+	
+	</select>
+
+</mapper>
