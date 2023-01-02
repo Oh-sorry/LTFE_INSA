@@ -36,4 +36,12 @@ public class pg107000ServiceImpl extends EgovAbstractServiceImpl implements pg10
 	public List<pg107000Dto> excelDownload(pg107000Dto pg107000Dto) throws Exception {
 		return pg107000Dao.excelDownload(pg107000Dto);
 	}
+	
+	public List<pg107000Dto> selectpg107000DtoJoinCount(pg107000Dto pg107000Dto) throws Exception {
+		return pg107000Dao.selectpg107000DtoJoinCount(pg107000Dto);
+	}
+
+	public List<pg107000Dto> selectpg107000DtoRetrCount(pg107000Dto pg107000Dto) throws Exception {
+		return pg107000Dao.selectpg107000DtoRetrCount(pg107000Dto);
+	}
 }

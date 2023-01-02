@@ -72,7 +72,6 @@ function goExcel() {
 	                                <tbody>
 	                                    <tr>
 	                                       <td>
-	                                        	<label></label>
 	                                        		<form:select path="joinYear" value="${searchFormData.joinYear}">
 	                                        			<form:option value="" label="선택" />
 		                                        		<c:forEach var="yearList" items="${yearList}" varStatus="status">
@@ -83,7 +82,6 @@ function goExcel() {
 	                                        <th>년</th>
 	                                        
 	                                        <td>
-	                                        	<label></label>
 	                                        		<form:select path="joinMonth" value="${searchFormData.joinMonth}">
 	                                        			<form:option value="" label="선택" />
 		                                        		<c:forEach var="monthList" items="${monthList}" varStatus="status">
@@ -170,9 +168,9 @@ function goExcel() {
                                     <tbody>
                                         <tr>
                                             <th>입사인원</th>
-                                            <td>11명</td>
+                                            <td>${joinCount} 명</td>
                                             <th>퇴직인원</th>
-                                            <td>9명</td>
+                                            <td>${retrCount} 명</td>
                                         </tr>
                                     </tbody>
                                 </table>

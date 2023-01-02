@@ -69,6 +69,8 @@ public class pg107000Controller {
 	
 	@RequestMapping(value = "/gbn10/pg107000.do", method = { RequestMethod.GET, RequestMethod.POST })
 	public String pg107000(@ModelAttribute("pg107000Dto") pg107000Dto pg107000Dto, HttpServletRequest request, HttpServletResponse reponse, HttpSession session, ModelMap model) throws Exception {
+
+		List<pg107000Dto> pg107000DtoList = pg107000Service.selectPg107000List(pg107000Dto);
 		
 		/* 재/퇴직 */
 		List<pg107000Dto> pg107000DtoGbnJoinList = pg107000Service.selectPg107000GbnJoinList(pg107000Dto);
@@ -76,8 +78,9 @@ public class pg107000Controller {
 		List<pg107000Dto> pg107000DtoYearList = pg107000Service.selectpg107000DtoYearList(pg107000Dto);
 		/* 입/퇴사 월 */
 		List<pg107000Dto> pg107000DtoMonthList = pg107000Service.selectpg107000DtoMonthList(pg107000Dto);
-		
-		List<pg107000Dto> pg107000DtoList = pg107000Service.selectPg107000List(pg107000Dto);
+		/* 입/퇴사 인원수 */
+		List<pg107000Dto> pg107000DtoJoinCount = pg107000Service.selectpg107000DtoJoinCount(pg107000Dto);
+		List<pg107000Dto> pg107000DtoRetrCount = pg107000Service.selectpg107000DtoRetrCount(pg107000Dto);
 		
 		for (int i = 0; i < pg107000DtoList.size(); i++) {
 			
@@ -94,18 +97,22 @@ public class pg107000Controller {
 			/* 주민번호 복호화 */
 			pg107000DtoList.get(i).setRepreNum(repreNum(AES128.decrypt(pg107000DtoList.get(i).getRepreNum())));
 			
+			/* 구분 : 입/퇴사 */
 			if (pg107000DtoList.get(i).getRetrDate() != null) {
 				pg107000DtoList.get(i).setGubun("퇴사");
 			} else {
 				pg107000DtoList.get(i).setGubun("입사");
 			}
+			
 		}
+
+		model.addAttribute("pernList", pg107000DtoList);
 		
 		model.put("gbnJoin", pg107000DtoGbnJoinList);
-		
-		model.addAttribute("pernList", pg107000DtoList);
 		model.addAttribute("yearList", pg107000DtoYearList);
 		model.addAttribute("monthList", pg107000DtoMonthList);
+		model.addAttribute("joinCount", pg107000DtoJoinCount.get(0).getJoinCount());
+		model.addAttribute("retrCount", pg107000DtoRetrCount.get(0).getRetrCount());
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map result = objectMapper.convertValue(pg107000Dto, Map.class);

@@ -30,4 +30,12 @@ public class pg107000Dao extends EgovAbstractMapper {
 		return selectList("pg107000Sql.excelDownload", pg107000Dto);
 	}
 
+	public List<pg107000Dto> selectpg107000DtoJoinCount(pg107000Dto pg107000Dto) {
+		return selectList("pg107000Sql.selectpg107000DtoJoinCount", pg107000Dto);
+	}
+
+	public List<pg107000Dto> selectpg107000DtoRetrCount(pg107000Dto pg107000Dto) {
+		return selectList("pg107000Sql.selectpg107000DtoRetrCount", pg107000Dto);
+	}
+
 }

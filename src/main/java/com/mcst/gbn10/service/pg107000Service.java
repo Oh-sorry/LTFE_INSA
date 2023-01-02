@@ -16,4 +16,8 @@ public interface pg107000Service {
 
 	public List<pg107000Dto> excelDownload(pg107000Dto pg107000Dto) throws Exception;
 
+	public List<pg107000Dto> selectpg107000DtoJoinCount(pg107000Dto pg107000Dto) throws Exception;
+
+	public List<pg107000Dto> selectpg107000DtoRetrCount(pg107000Dto pg107000Dto) throws Exception;
+
 }

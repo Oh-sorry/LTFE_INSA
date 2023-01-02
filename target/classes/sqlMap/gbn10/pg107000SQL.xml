@@ -84,32 +84,24 @@
 		AND      a.pay_grade   = d.DETAIL_CODE (+)
 		AND      a.salary_code = e.DETAIL_CODE (+)
 		AND      a.work_area   = f.detail_code (+)
+		<!-- ===================================================================================================================== -->
 		<if test="detailCode != null and detailCode == 1">
+			AND a.join_date is NOT NULL
 			AND a.retr_date is NULL
-			<if test="joinYear != null and joinYear != ''">
-				AND SUBSTR(a.join_date, 0, 4) = #{joinYear}
-				<if test="joinMonth != null and joinMonth != ''">
-					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
-				</if>
-			</if>
-		</if>
-		<if test="detailCode != null and detailCode == 2">
-			AND a.retr_date is NOT NULL
-			<if test="joinYear != null and joinYear != ''">
-				AND SUBSTR(a.retr_date, 0, 4) = #{joinYear}
-				<if test="joinMonth != null and joinMonth != ''">
-					AND SUBSTR(a.retr_date, 5, 2) = #{joinMonth}
-				</if>
-			</if>
-		</if>
-		<if test="joinYear != null and joinYear != ''">
-			AND (SUBSTR(a.join_date, 0, 4) = #{joinYear} OR SUBSTR(a.retr_date, 0, 4) = #{joinYear})
-			<if test="joinMonth != null and joinMonth != ''">
-				AND (SUBSTR(a.join_date, 5, 2) = #{joinMonth} OR SUBSTR(a.retr_date, 5, 2) = #{joinMonth})
-			</if>
 		</if>
 		
-		ORDER BY a.pern_no;
+		<if test="detailCode != null and detailCode == 2">
+			AND a.retr_date is NOT NULL
+		</if>
+		
+		<if test="joinYear != null and joinYear != ''">
+			AND ((SUBSTR(a.join_date, 0, 4) = #{joinYear}) OR (SUBSTR(a.retr_date, 0, 4) = #{joinYear}))
+		</if>
+		
+		<if test="joinMonth != null and joinMonth != ''">
+			AND ((SUBSTR(a.join_date, 5, 2) = #{joinMonth}) OR (SUBSTR(a.retr_date, 5, 2) = #{joinMonth}))
+		</if>
+		ORDER BY rnum
 	
 	</select>
 	
@@ -180,7 +172,13 @@
 					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
 				</if>
 			</if>
+			<if test="joinYear == null or joinYear == ''">
+				<if test="joinMonth != null and joinMonth != ''">
+					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
+				</if>
+			</if>
 		</if>
+		
 		<if test="detailCode != null and detailCode == 2">
 			AND a.retr_date is NOT NULL
 			<if test="joinYear != null and joinYear != ''">
@@ -189,16 +187,54 @@
 					AND SUBSTR(a.retr_date, 5, 2) = #{joinMonth}
 				</if>
 			</if>
-		</if>
-		<if test="joinYear != null and joinYear != ''">
-			AND (SUBSTR(a.join_date, 0, 4) = #{joinYear} OR SUBSTR(a.retr_date, 0, 4) = #{joinYear})
-			<if test="joinMonth != null and joinMonth != ''">
-				AND (SUBSTR(a.join_date, 5, 2) = #{joinMonth} OR SUBSTR(a.retr_date, 5, 2) = #{joinMonth})
+			<if test="joinYear == null or joinYear == ''">
+				<if test="joinMonth != null and joinMonth != ''">
+					AND SUBSTR(a.retr_date, 5, 2) = #{joinMonth}
+				</if>
 			</if>
 		</if>
 		
-		ORDER BY a.pern_no;
+		<if test="detailCode != null and detailCode == 0">
+			<if test="joinYear != null and joinYear != ''">
+				AND SUBSTR(a.join_date, 0, 4) = #{joinYear}
+				<if test="joinMonth != null and joinMonth != ''">
+					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
+				</if>
+			</if>
+			<if test="joinYear == null or joinYear == ''">
+				<if test="joinMonth != null and joinMonth != ''">
+					AND (SUBSTR(a.join_date, 5, 2) = #{joinMonth} or SUBSTR(a.retr_date, 5, 2) = #{joinMonth})
+				</if>
+			</if>
+		</if>
+		ORDER BY rnum;
 	
+	</select>
+	
+	<select id="selectpg107000DtoJoinCount" parameterType="com.mcst.dto.gbn10.pg107000Dto" resultType="com.mcst.dto.gbn10.pg107000Dto">
+		SELECT COUNT(a.pern_no) AS join_count
+		FROM   hpa100t a
+		WHERE  a.join_date is NOT NULL
+		
+		<if test="joinYear != null and joinYear != ''">
+			AND SUBSTR(a.join_date, 0, 4) = #{joinYear}
+		</if>
+		<if test="joinMonth != null and joinMonth != ''">
+			AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
+		</if>
+	</select>
+	
+	<select id="selectpg107000DtoRetrCount" parameterType="com.mcst.dto.gbn10.pg107000Dto" resultType="com.mcst.dto.gbn10.pg107000Dto">
+		SELECT COUNT(a.pern_no) AS retr_count
+		FROM   hpa100t a
+		WHERE  a.retr_date is NOT NULL	
+		<if test="joinYear != null and joinYear != ''">
+			AND SUBSTR(a.retr_date, 0, 4) = #{joinYear}
+		</if>
+		<if test="joinMonth != null and joinMonth != ''">
+			AND SUBSTR(a.retr_date, 5, 2) = #{joinMonth}
+		</if>
+		
 	</select>
 
 </mapper>

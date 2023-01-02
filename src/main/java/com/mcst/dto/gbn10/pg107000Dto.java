@@ -37,6 +37,8 @@ public class pg107000Dto implements Serializable{
 	private String gubun;
 	private int countJoinDate;
 	private int countRetrDate;
+	private int joinCount;
+	private int retrCount;
 	
 	public int getRnum() {
 		return rnum;
@@ -205,6 +207,18 @@ public class pg107000Dto implements Serializable{
 	}
 	public void setCountRetrDate(int countRetrDate) {
 		this.countRetrDate = countRetrDate;
+	}
+	public int getJoinCount() {
+		return joinCount;
+	}
+	public void setJoinCount(int joinCount) {
+		this.joinCount = joinCount;
+	}
+	public int getRetrCount() {
+		return retrCount;
+	}
+	public void setRetrCount(int retrCount) {
+		this.retrCount = retrCount;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
