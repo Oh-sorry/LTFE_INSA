@@ -25,6 +25,7 @@ import com.mcst.main.service.mainService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mcst.AES128.AES128;
 import com.mcst.common.dateUtil;
+import com.mcst.common.stringUtil;
 import com.mcst.dto.gbn10.pg104500Dto;
 import com.mcst.gbn10.service.pg104500Service;
 
@@ -46,27 +47,7 @@ public class pg104500Controller {
 	protected pg104500Service pg104500Service;
 
 	protected static Logger logger = Logger.getLogger(Main.class.getName());
-	
-	/* 전화번호 변환 (01011112222 -> 010-1111-2222) */
-	public static String phone(String src) {
-		if (src == null) {
-		      return "";
-		}
-		if(src.length() == 8) {
-		      return src.replaceFirst("^([0-9]{4})([0-9]{4})$", "$1-$2");
-	    } else if (src.length() == 12) {
-	      return src.replaceFirst("(^[0-9]{4})([0-9]{4})([0-9]{4})$", "$1-$2-$3");
-	    }
-	    return src.replaceFirst("(^02|[0-9]{3})([0-9]{3,4})([0-9]{4})$", "$1-$2-$3");
-	}
-	
-	/* 연봉구분 형식 (100000 -> 1,000,000) */
-	public String comma(int value) {
-		DecimalFormat df = new DecimalFormat("###,###");
-		String value_str = df.format(value);
-		return value_str;
-	}
-	
+
 	@RequestMapping(value = "/gbn10/pg104500.do", method = { RequestMethod.GET, RequestMethod.POST })
 	public String pg104500(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletRequest request, HttpServletResponse reponse, HttpSession session, ModelMap model) throws Exception {
 		/* 재/퇴직 */
@@ -88,9 +69,6 @@ public class pg104500Controller {
 		
 		for (int i = 0; i < pg104500DtoList.size(); i++) {
 
-			/* 연봉구분 형식 (100000 -> 1,000,000) */
-			pg104500DtoList.get(i).setStringWagesAmt(comma(Integer.parseInt(pg104500DtoList.get(i).getWagesAmt())));
-
 			/* 날짜 형식 (yyyymmdd -> yyyy.mm.dd) */
 			pg104500DtoList.get(i).setJoinDate(dateUtil.formatDate(pg104500DtoList.get(i).getJoinDate(), '.'));
 			if (pg104500DtoList.get(i).getRetrDate() != null) {
@@ -98,7 +76,7 @@ public class pg104500Controller {
 			}
 
 			/* 전화번호 decode */
-			pg104500DtoList.get(i).setPhoneNo(phone(AES128.decrypt(pg104500DtoList.get(i).getPhoneNo())));
+			pg104500DtoList.get(i).setPhoneNo(stringUtil.formatPhone(AES128.decrypt(pg104500DtoList.get(i).getPhoneNo())));
 
 			/* 남/여 구분 */
 			if(pg104500DtoList.get(i).getSexCode().equals("1")) {
@@ -113,6 +91,9 @@ public class pg104500Controller {
 			} else {
 				pg104500DtoList.get(i).setMutualYn("N");
 			}
+			
+			/* 생년월일 복호화 */
+			pg104500DtoList.get(i).setBirtDate(AES128.decrypt(pg104500DtoList.get(i).getBirtDate()));
 		}
 
 		model.put("gbnList", pg104500DtoGbnList);
@@ -148,9 +129,6 @@ public class pg104500Controller {
 		
 		for (int i = 0; i < excelDownload.size(); i++) {
 
-			/* 연봉구분 형식 (100000 -> 1,000,000) */
-			excelDownload.get(i).setStringWagesAmt(comma(Integer.parseInt(excelDownload.get(i).getWagesAmt())));
-
 			/* 날짜 형식 (yyyymmdd -> yyyy.mm.dd) */
 			excelDownload.get(i).setJoinDate(dateUtil.formatDate(excelDownload.get(i).getJoinDate(), '.'));
 			if (excelDownload.get(i).getRetrDate() != null) {
@@ -158,7 +136,7 @@ public class pg104500Controller {
 			}
 
 			/* 전화번호 decode */
-			excelDownload.get(i).setPhoneNo(phone(AES128.decrypt(excelDownload.get(i).getPhoneNo())));
+			excelDownload.get(i).setPhoneNo(stringUtil.formatPhone(AES128.decrypt(excelDownload.get(i).getPhoneNo())));
 
 			/* 남/여 구분 */
 			if(excelDownload.get(i).getSexCode().equals("1")) {
@@ -173,17 +151,20 @@ public class pg104500Controller {
 			} else {
 				excelDownload.get(i).setMutualYn("N");
 			}
+			
+			/* 생년월일 복호화 */
+			excelDownload.get(i).setBirtDate(AES128.decrypt(excelDownload.get(i).getBirtDate()));
 		}
 		// 열 폭 수정
 		CellStyle style = wb.createCellStyle();
 		style = wb.createCellStyle();
 		
-		sheet.setColumnWidth(3, 8000);
-		sheet.setColumnWidth(7, 3000);
-		sheet.setColumnWidth(9, 3000);
+		sheet.setColumnWidth(4, 8000);
+		sheet.setColumnWidth(8, 3000);
 		sheet.setColumnWidth(10, 3000);
-		sheet.setColumnWidth(11, 4000);
+		sheet.setColumnWidth(11, 3000);
 		sheet.setColumnWidth(12, 4000);
+		sheet.setColumnWidth(13, 4000);
 		
 		//header
 		row = sheet.createRow(0);
@@ -192,28 +173,30 @@ public class pg104500Controller {
 		cell = row.createCell(1);
 		cell.setCellValue("성명");
 		cell = row.createCell(2);
-		cell.setCellValue("성별");
+		cell.setCellValue("생년월일");
 		cell = row.createCell(3);
-		cell.setCellValue("부서");
+		cell.setCellValue("성별");
 		cell = row.createCell(4);
-		cell.setCellValue("직위");
+		cell.setCellValue("부서");
 		cell = row.createCell(5);
-		cell.setCellValue("입사구분");
+		cell.setCellValue("직위");
 		cell = row.createCell(6);
-		cell.setCellValue("사원구분");
+		cell.setCellValue("입사구분");
 		cell = row.createCell(7);
-		cell.setCellValue("급여구분");
+		cell.setCellValue("사원구분");
 		cell = row.createCell(8);
-		cell.setCellValue("연봉구분");
+		cell.setCellValue("급여구분");
 		cell = row.createCell(9);
-		cell.setCellValue("입사일자");
+		cell.setCellValue("연봉구분");
 		cell = row.createCell(10);
-		cell.setCellValue("퇴사일자");
+		cell.setCellValue("입사일자");
 		cell = row.createCell(11);
-		cell.setCellValue("근무지");
+		cell.setCellValue("퇴사일자");
 		cell = row.createCell(12);
-		cell.setCellValue("핸드폰");
+		cell.setCellValue("근무지");
 		cell = row.createCell(13);
+		cell.setCellValue("핸드폰");
+		cell = row.createCell(14);
 		cell.setCellValue("상조회");
 		
 		// Body
@@ -228,6 +211,8 @@ public class pg104500Controller {
 			cell = row.createCell(cellCount++);
 			cell.setCellValue(excelDownload.get(i).getName());
 			cell = row.createCell(cellCount++);
+			cell.setCellValue(excelDownload.get(i).getBirtDate());
+			cell = row.createCell(cellCount++);
 			cell.setCellValue(excelDownload.get(i).getSexCode());
 			cell = row.createCell(cellCount++);
 			cell.setCellValue(excelDownload.get(i).getDeptName());
@@ -240,7 +225,7 @@ public class pg104500Controller {
 			cell = row.createCell(cellCount++);
 			cell.setCellValue(excelDownload.get(i).getSalaryName());
 			cell = row.createCell(cellCount++);
-			cell.setCellValue(excelDownload.get(i).getStringWagesAmt());
+			cell.setCellValue(excelDownload.get(i).getWagesAmt());
 			cell = row.createCell(cellCount++);
 			cell.setCellValue(excelDownload.get(i).getJoinDate());
 			cell = row.createCell(cellCount++);

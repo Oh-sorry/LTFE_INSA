@@ -3,7 +3,6 @@
 <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <!DOCTYPE html>
@@ -14,7 +13,7 @@
 <meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="<c:url value='/css/jquery-ui.min.css'/>" />
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/reset.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/resetN.css'/>"> <!-- css 파일 교체함  -->
 <link rel="stylesheet" href="<c:url value='/css/styleN.css'/>"> <!-- css 파일 교체함  -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous">
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
@@ -31,7 +30,7 @@
 
 <script language="javascript">
 	$(document).ready(function() {
-		var deptGbn = sessionStorage.getItem("rank");
+		var deptGbn = $('[id=listForm] #rank').val();
 		$('#deptList'+deptGbn).addClass("on").next("ul").slideDown("fast");
 	});
 	
@@ -40,15 +39,15 @@
 		document.listForm.submit();
 	}
 	
-	function searchDept(dept1, dept2, rank) {
-		sessionStorage.setItem("rank", rank);
-		$('[id=listForm] #searchKeyword').val(dept1 + " " + dept2);
+	function searchDept(deptNo, rank) {		
+		$('[id=listForm] #searchKeyword').val(deptNo);
+		$('[id=listForm] #rank').val(rank);
 		document.listForm.action = "<c:url value='/gbn10/pg109503.do'/>";
 		document.listForm.submit();
 	}
 	
 	function excelDown() { // 데이터가 너무 많으면 오래 걸림 - 이때 다른 버튼 못누르게 막도록 작성
-		document.listForm.action = "<c:url value='/gbn10/excelDownload.do'/>";
+		document.listForm.action = "<c:url value='/gbn10/pg109503excelDownload.do'/>";
 		document.listForm.submit();
 
 		loadingOn();
@@ -87,6 +86,7 @@
 						<div class="section">
 							<div class="search_Area m_b_20">
 							    <form:hidden path="searchKeyword" value="${searchFormData.searchKeyword}"/>
+							    <form:hidden path="rank" value="${searchFormData.rank}"/>
 	                            <table>
 	                                <colgroup>
 	                                    <col style="width:7%" />
@@ -99,7 +99,7 @@
 	                                            <label></label>
 	                                            <!-- 재직인 경우 퇴직인 경우 -->
 									      		<form:select path="searchJoinGbn1" value="${searchFormData.searchJoinGbn1}" onchange="javascript:goReload()">
-													<form:option value="0" label="선택" />
+													<form:option value="0" label="전체" />
 													<form:option value="1" label="재직" />
 													<form:option value="2" label="퇴직" />
 												</form:select>
@@ -120,9 +120,10 @@
 	                                        		<li>
 	                                                	<a href="" id="deptList${result1.rank}">${result1.deptList1}</a>
 	                                                	<ul class="depth3">
+	                                                		<li><a href="javascript:searchDept('${result1.deptNo}', '${result1.rank}')">${result1.deptList1}</a></li>
 		                                                	<c:forEach var="result2" items="${deptList2}" varStatus="status">
 		                                                		<c:if test="${result1.rank == result2.rank}">
-		                                                			<li><a href="javascript:searchDept('${result1.deptList1}', '${result2.deptList2}', '${result1.rank}')">${result2.deptList2}</a></li>
+		                                                			<li><a href="javascript:searchDept('${result2.deptNo}', '${result1.rank}')">${result2.deptList2}</a></li>
 		                                                		</c:if>
 		                                                	</c:forEach>
 	                                                	</ul>
@@ -163,7 +164,7 @@
 		                                    	<tr>
 		                                            <td rowspan="2"><c:out value="${result.rnum}" /></td>
 		                                            <td><c:out value="${result.pernNo}" /></td>
-		                                            <td rowspan="2"><c:out value="${result.deptName1}" /><br><c:out value="${result.deptName2}" /></td>
+		                                            <td rowspan="2">${result.deptFullName}</td>
 		                                            <td rowspan="2"><c:out value="${result.postCode}" /></td>
 		                                            <td><c:out value="${result.payGrade}" /></td>
 		                                            <td><c:out value="${result.joinCode}" /></td>

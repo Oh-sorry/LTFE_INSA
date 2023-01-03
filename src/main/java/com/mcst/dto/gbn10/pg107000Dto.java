@@ -32,7 +32,6 @@ public class pg107000Dto implements Serializable{
 	private String salaryCode;
 	private String salaryName;
 	private String wagesAmt;
-	private String stringWagesAmt;
 	private String detailCode = "1";
 	private String gubun;
 	private int countJoinDate;
@@ -177,12 +176,6 @@ public class pg107000Dto implements Serializable{
 	}
 	public void setWagesAmt(String wagesAmt) {
 		this.wagesAmt = wagesAmt;
-	}
-	public String getStringWagesAmt() {
-		return stringWagesAmt;
-	}
-	public void setStringWagesAmt(String stringWagesAmt) {
-		this.stringWagesAmt = stringWagesAmt;
 	}
 	public String getDetailCode() {
 		return detailCode;

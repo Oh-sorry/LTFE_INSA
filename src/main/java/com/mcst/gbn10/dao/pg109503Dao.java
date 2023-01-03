@@ -23,7 +23,7 @@ public class pg109503Dao extends EgovAbstractMapper {
 		return selectList("pg109503Sql.selectPg109503DeptList2", pg109503Dto);
 	}
 
-	public List<Map<String, Object>> excelList(pg109503Dto pg109503Dto) {
+	public List<Map<String, Object>> excelList(pg109503Dto pg109503Dto) throws Exception {
 		return selectList("pg109503Sql.excelList", pg109503Dto);
 	}
 

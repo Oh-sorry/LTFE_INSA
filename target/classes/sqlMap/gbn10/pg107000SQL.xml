@@ -47,7 +47,7 @@
 		         a.kor_addr,
 		         a.salary_code,
 		         e.detail_code_name AS salary_name,
-		         a.wages_amt,
+		         FORMAT(a.wages_amt, 0) AS wages_amt,
 		         CASE WHEN IFNULL(A.PAY_GRADE2, '') = '' THEN '' ELSE A.PAY_GRADE2 + '호봉' END AS payGrade2
 		FROM     hpa100t a,
 		         (SELECT DETAIL_CODE,
@@ -84,22 +84,33 @@
 		AND      a.pay_grade   = d.DETAIL_CODE (+)
 		AND      a.salary_code = e.DETAIL_CODE (+)
 		AND      a.work_area   = f.detail_code (+)
-		<!-- ===================================================================================================================== -->
+		
 		<if test="detailCode != null and detailCode == 1">
-			AND a.join_date is NOT NULL
-			AND a.retr_date is NULL
+			<if test="joinYear != null and joinYear != ''">
+				AND SUBSTR(a.join_date, 0, 4) = #{joinYear}
+				<if test="joinMonth != null and joinMonth != ''">
+					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
+				</if>
+			</if>
 		</if>
 		
 		<if test="detailCode != null and detailCode == 2">
 			AND a.retr_date is NOT NULL
+			<if test="joinYear != null and joinYear != ''">
+				AND SUBSTR(a.retr_date, 0, 4) = #{joinYear}
+				<if test="joinMonth != null and joinMonth != ''">
+					AND SUBSTR(a.retr_date, 5, 2) = #{joinMonth}
+				</if>
+			</if>
 		</if>
 		
-		<if test="joinYear != null and joinYear != ''">
-			AND ((SUBSTR(a.join_date, 0, 4) = #{joinYear}) OR (SUBSTR(a.retr_date, 0, 4) = #{joinYear}))
-		</if>
-		
-		<if test="joinMonth != null and joinMonth != ''">
-			AND ((SUBSTR(a.join_date, 5, 2) = #{joinMonth}) OR (SUBSTR(a.retr_date, 5, 2) = #{joinMonth}))
+		<if test="detailCode != null and detailCode == 0">
+			<if test="joinYear != null and joinYear != ''">
+				AND ((SUBSTR(a.join_date, 0, 4) = #{joinYear}) OR (SUBSTR(a.retr_date, 0, 4) = #{joinYear}))
+				<if test="joinMonth != null and joinMonth != ''">
+					AND ((SUBSTR(a.join_date, 0, 6) = CONCAT(#{joinYear}, #{joinMonth})) OR (SUBSTR(a.retr_date, 0, 6) = CONCAT(#{joinYear}, #{joinMonth})))
+				</if>
+			</if>
 		</if>
 		ORDER BY rnum
 	
@@ -127,7 +138,7 @@
 		         a.kor_addr,
 		         a.salary_code,
 		         e.detail_code_name AS salary_name,
-		         a.wages_amt,
+		         FORMAT(a.wages_amt, 0) AS wages_amt,
 		         CASE WHEN IFNULL(A.PAY_GRADE2, '') = '' THEN '' ELSE A.PAY_GRADE2 + '호봉' END AS payGrade2
 		FROM     hpa100t a,
 		         (SELECT DETAIL_CODE,
@@ -165,14 +176,8 @@
 		AND      a.salary_code = e.DETAIL_CODE (+)
 		AND      a.work_area   = f.detail_code (+)
 		<if test="detailCode != null and detailCode == 1">
-			AND a.retr_date is NULL
 			<if test="joinYear != null and joinYear != ''">
 				AND SUBSTR(a.join_date, 0, 4) = #{joinYear}
-				<if test="joinMonth != null and joinMonth != ''">
-					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
-				</if>
-			</if>
-			<if test="joinYear == null or joinYear == ''">
 				<if test="joinMonth != null and joinMonth != ''">
 					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
 				</if>
@@ -187,23 +192,13 @@
 					AND SUBSTR(a.retr_date, 5, 2) = #{joinMonth}
 				</if>
 			</if>
-			<if test="joinYear == null or joinYear == ''">
-				<if test="joinMonth != null and joinMonth != ''">
-					AND SUBSTR(a.retr_date, 5, 2) = #{joinMonth}
-				</if>
-			</if>
 		</if>
 		
 		<if test="detailCode != null and detailCode == 0">
 			<if test="joinYear != null and joinYear != ''">
-				AND SUBSTR(a.join_date, 0, 4) = #{joinYear}
+				AND ((SUBSTR(a.join_date, 0, 4) = #{joinYear}) OR (SUBSTR(a.retr_date, 0, 4) = #{joinYear}))
 				<if test="joinMonth != null and joinMonth != ''">
-					AND SUBSTR(a.join_date, 5, 2) = #{joinMonth}
-				</if>
-			</if>
-			<if test="joinYear == null or joinYear == ''">
-				<if test="joinMonth != null and joinMonth != ''">
-					AND (SUBSTR(a.join_date, 5, 2) = #{joinMonth} or SUBSTR(a.retr_date, 5, 2) = #{joinMonth})
+					AND ((SUBSTR(a.join_date, 0, 6) = CONCAT(#{joinYear}, #{joinMonth})) OR (SUBSTR(a.retr_date, 0, 6) = CONCAT(#{joinYear}, #{joinMonth})))
 				</if>
 			</if>
 		</if>

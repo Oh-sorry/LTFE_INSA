@@ -1951,4 +1951,41 @@ public class stringUtil {
 
 		return retFormat;
 	}
+	
+	/**
+	 *
+	 * 전화번호, 핸드폰 번호 format
+	 *
+	 */
+	public static String formatPhone(String str) {
+		String noStr = str;
+	
+		if (noStr != null && !noStr.contentEquals("")) {
+			noStr = noStr.replaceAll(Pattern.quote("-"), "");
+			if (noStr.length() == 11) { // 예) 070-1234-1234
+				noStr = noStr.substring(0, 3) + "-" + noStr.substring(3, 7) + "-" + noStr.substring(7, 11);
+			} else if (noStr.length() == 9) { // 예) 02-123-1234
+				noStr = noStr.substring(0, 2) + "-" + noStr.substring(2, 5) + "-" + noStr.substring(5, 9);
+			} else if (noStr.length() == 10) {
+				if (noStr.substring(0, 2).contains("02")) { // 예) 02-1234-1234
+					noStr = noStr.substring(0, 2) + "-" + noStr.substring(2, 6) + "-" + noStr.substring(6, 10);
+				} else { // 예) 070-123-1234
+					noStr = noStr.substring(0, 3) + "-" + noStr.substring(3, 6) + "-" + noStr.substring(6, 10);
+				}
+			}
+		}
+		return noStr;
+	}
+	
+	/**
+	 *
+	 * 주민번호 - format
+	 *
+	 */
+	public static String repreNum(String src) {
+		if (src == null) {
+		      return "";
+		}
+	    return src.replaceFirst("(^[0-9]{6})([0-9]{7})$", "$1-$2");
+	}
 }

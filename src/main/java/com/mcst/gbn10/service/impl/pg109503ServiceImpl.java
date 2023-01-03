@@ -13,7 +13,7 @@ import com.mcst.dto.gbn10.pg109503Dto;
 import com.mcst.gbn10.dao.pg109503Dao;
 
 @Service("pg109503Service")
-public class pg109503ServiceImpl extends EgovAbstractServiceImpl implements pg109503Service{
+public class pg109503ServiceImpl extends EgovAbstractServiceImpl implements pg109503Service {
 	
 	@Resource(name = "pg109503Dao")
     private pg109503Dao pg109503Dao;

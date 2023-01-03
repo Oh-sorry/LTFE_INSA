@@ -9,11 +9,13 @@ public class pg109503Dto implements Serializable {
 	 */
 	private static final long serialVersionUID = 8279570342292124845L;
 
-	private String searchJoinGbn1;	// 재/퇴직 구분
+	private String searchJoinGbn1 = "1";	// 재/퇴직 구분
 	private String deptList1;		// 부서 리스트1 (목록)
 	private String deptList2;		// 부서 리스트2 (세부 목록)
 	private int rank;				// 리스트 구분용 변수
 	private String searchKeyword;	// 검색어
+	private String deptNo;
+	
 	
 	private int rnum;				// No
 	private String pernNo;			// 사번
@@ -67,7 +69,12 @@ public class pg109503Dto implements Serializable {
 	public void setSearchKeyword(String searchKeyword) {
 		this.searchKeyword = searchKeyword;
 	}
-	
+	public String getDeptNo() {
+		return deptNo;
+	}
+	public void setDeptNo(String deptNo) {
+		this.deptNo = deptNo;
+	}
 	
 	
 	public int getRnum() {

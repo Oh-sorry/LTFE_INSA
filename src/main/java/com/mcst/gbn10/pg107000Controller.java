@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -29,7 +30,7 @@ import com.mcst.main.service.mainService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mcst.AES128.AES128;
 import com.mcst.common.dateUtil;
-import com.mcst.dto.gbn10.pg104500Dto;
+import com.mcst.common.stringUtil;
 import com.mcst.dto.gbn10.pg107000Dto;
 import com.mcst.gbn10.service.pg107000Service;
 
@@ -52,21 +53,6 @@ public class pg107000Controller {
 	
 	protected static Logger logger = Logger.getLogger(Main.class.getName());
 	
-	/* 연봉구분 형식 (100000 -> 1,000,000) */
-	public String comma(int value) {
-		DecimalFormat df = new DecimalFormat("###,###");
-		String value_str = df.format(value);
-		return value_str;
-	}
-	
-	/* 전화번호 변환 (01011112222 -> 010-1111-2222) */
-	public static String repreNum(String src) {
-		if (src == null) {
-		      return "";
-		}
-	    return src.replaceFirst("(^[0-9]{6})([0-9]{7})$", "$1-$2");
-	}
-	
 	@RequestMapping(value = "/gbn10/pg107000.do", method = { RequestMethod.GET, RequestMethod.POST })
 	public String pg107000(@ModelAttribute("pg107000Dto") pg107000Dto pg107000Dto, HttpServletRequest request, HttpServletResponse reponse, HttpSession session, ModelMap model) throws Exception {
 
@@ -84,9 +70,6 @@ public class pg107000Controller {
 		
 		for (int i = 0; i < pg107000DtoList.size(); i++) {
 			
-			/* 연봉구분 형식 (100000 -> 1,000,000) */
-			pg107000DtoList.get(i).setStringWagesAmt(comma(Integer.parseInt(pg107000DtoList.get(i).getWagesAmt())));
-			
 			/* 날짜 형식 (yyyymmdd -> yyyy.mm.dd) */
 			pg107000DtoList.get(i).setJoinDate(dateUtil.formatDate(pg107000DtoList.get(i).getJoinDate(), '.'));
 			if (pg107000DtoList.get(i).getRetrDate() != null) {
@@ -95,7 +78,7 @@ public class pg107000Controller {
 			/* 주소 복호화 */
 			pg107000DtoList.get(i).setKorAddr(AES128.decrypt(pg107000DtoList.get(i).getKorAddr()));
 			/* 주민번호 복호화 */
-			pg107000DtoList.get(i).setRepreNum(repreNum(AES128.decrypt(pg107000DtoList.get(i).getRepreNum())));
+			pg107000DtoList.get(i).setRepreNum(stringUtil.repreNum(AES128.decrypt(pg107000DtoList.get(i).getRepreNum())));
 			
 			/* 구분 : 입/퇴사 */
 			if (pg107000DtoList.get(i).getRetrDate() != null) {
@@ -124,6 +107,10 @@ public class pg107000Controller {
 	@SuppressWarnings("resource")
 	@RequestMapping(value = "/gbn10/pg107000Excel.do")
 	public void ExcelDownload(@ModelAttribute("pg107000Dto") pg107000Dto pg107000Dto, HttpServletResponse response) throws Exception {
+		
+		Cookie cookie = new Cookie("fileDownloadToken", "TRUE");
+		response.addCookie(cookie);
+		
 		XSSFWorkbook wb = null;
 		Sheet sheet = null;
 		Row row = null;
@@ -139,9 +126,6 @@ public class pg107000Controller {
 		
 		for (int i = 0; i < excelDownload.size(); i++) {
 			
-			/* 연봉구분 형식 (100000 -> 1,000,000) */
-			excelDownload.get(i).setStringWagesAmt(comma(Integer.parseInt(excelDownload.get(i).getWagesAmt())));
-			
 			/* 날짜 형식 (yyyymmdd -> yyyy.mm.dd) */
 			excelDownload.get(i).setJoinDate(dateUtil.formatDate(excelDownload.get(i).getJoinDate(), '.'));
 			if (excelDownload.get(i).getRetrDate() != null) {
@@ -150,7 +134,7 @@ public class pg107000Controller {
 			/* 주소 복호화 */
 			excelDownload.get(i).setKorAddr(AES128.decrypt(excelDownload.get(i).getKorAddr()));
 			/* 주민번호 복호화 */
-			excelDownload.get(i).setRepreNum(repreNum(AES128.decrypt(excelDownload.get(i).getRepreNum())));
+			excelDownload.get(i).setRepreNum(stringUtil.repreNum(AES128.decrypt(excelDownload.get(i).getRepreNum())));
 			
 			if (excelDownload.get(i).getRetrDate() != null) {
 				excelDownload.get(i).setGubun("퇴사");
@@ -268,7 +252,7 @@ public class pg107000Controller {
 			cell.setCellValue(excelDownload.get(i).getRetrDate());
 			cell = row.createCell(cellCount++);
 			cell = row.createCell(cellCount++);
-			cell.setCellValue(excelDownload.get(i).getStringWagesAmt());
+			cell.setCellValue(excelDownload.get(i).getWagesAmt());
 
 		}
 		 

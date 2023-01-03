@@ -161,6 +161,7 @@ function goExcel() {
 												<th>No</th>
 		                                        <th>사번</th>
 		                                        <th>성명</th>
+		                                        <th>생년월일</th>
 		                                        <th>성별</th>
 		                                        <th>부서</th>
 		                                        <th>직위</th>
@@ -181,13 +182,14 @@ function goExcel() {
 													<td><c:out value="${result.rnum}" /></td>
 													<td><c:out value="${result.pernNo}" /></td>
 													<td><c:out value="${result.name}" /></td>
+													<td><c:out value="${result.birtDate}" /></td>
 													<td><c:out value="${result.sexCode}" /></td>
 													<td><c:out value="${result.deptName}" /></td>
 													<td><c:out value="${result.postName}" /></td>
 													<td><c:out value="${result.joinName}" /></td>
 													<td><c:out value="${result.employName}" /></td>
 													<td><c:out value="${result.salaryName}" /></td>
-													<td><c:out value="${result.stringWagesAmt}" /></td>
+													<td><c:out value="${result.wagesAmt}" /></td>
 													<td><c:out value="${result.joinDate}" /></td>
 													<td><c:out value="${result.retrDate}" /></td>
 													<td><c:out value="${result.workAreaName}" /></td>

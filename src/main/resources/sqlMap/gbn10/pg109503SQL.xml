@@ -16,7 +16,7 @@
 		       IFNULL(E.DETAIL_CODE_NAME, '-')  AS joinCode,
 		       IFNULL(F.DETAIL_CODE_NAME, '-')  AS employType,
 		       G.DETAIL_CODE_NAME  AS salaryCode,
-		       A.WAGES_AMT,
+		       FORMAT(A.WAGES_AMT, 0) AS wagesAmt,
 		       A.JOIN_DATE,
 		       IFNULL(A.RETR_DATE, '-') AS retrDate,
 		       H.DETAIL_CODE_NAME AS workArea,
@@ -81,25 +81,25 @@
 				AND A.RETR_DATE IS NOT NULL
 			</if>
 			<if test="searchKeyword != null and searchKeyword != ''">
-				AND B.DETAIL_CODE_NAME = #{searchKeyword}
+				AND B.DETAIL_CODE = #{searchKeyword}
 			</if>
 	</select>
 	
 	<select id="selectPg109503DeptList1" parameterType="com.mcst.dto.gbn10.pg109503Dto" resultType="com.mcst.dto.gbn10.pg109503Dto">
-		SELECT   DENSE_RANK() OVER (ORDER BY SUBSTR(DETAIL_CODE, 1, 2)) AS rank, DETAIL_CODE_NAME AS deptList1
+		SELECT   DENSE_RANK() OVER (ORDER BY SUBSTR(DETAIL_CODE, 1, 2)) AS rank, DETAIL_CODE_NAME AS deptList1, DETAIL_CODE AS deptNo
 		FROM     BCO100T
-		WHERE    COM_CODE                   ='H002'
-		AND      DETAIL_CODE_NAME IS NOT NULL
-		AND		 SUBSTR(DETAIL_CODE, 1, 2) != '76'
+		WHERE    COM_CODE                   = 'H002'
+		AND      DETAIL_CODE_NAME IS NOT NULL		
 		GROUP BY SUBSTR(DETAIL_CODE,1,2)
 		ORDER BY DETAIL_CODE
 	</select>
 	
 	<select id="selectPg109503DeptList2" parameterType="com.mcst.dto.gbn10.pg109503Dto" resultType="com.mcst.dto.gbn10.pg109503Dto">
-		SELECT   DENSE_RANK() OVER (ORDER BY SUBSTR(DETAIL_CODE, 1, 2)) AS rank, SUBSTR(DETAIL_CODE_NAME, INSTR(DETAIL_CODE_NAME, ' ') + 1) AS deptList2
+		SELECT   DENSE_RANK() OVER (ORDER BY SUBSTR(DETAIL_CODE, 1, 2)) AS rank, SUBSTR(DETAIL_CODE_NAME, INSTR(DETAIL_CODE_NAME, ' ') + 1) AS deptList2, DETAIL_CODE AS deptNo
 		FROM     BCO100T
 		WHERE    COM_CODE            = 'H002'
 		AND      DETAIL_CODE_NAME LIKE '% %'
+		AND 	 SUBSTR(DETAIL_CODE, 1, 2) != '76'
 		ORDER BY DETAIL_CODE
 	</select>
 	
@@ -116,7 +116,7 @@
 		       IFNULL(E.DETAIL_CODE_NAME, '-')  AS joinCode,
 		       IFNULL(F.DETAIL_CODE_NAME, '-')  AS employType,
 		       G.DETAIL_CODE_NAME  AS salaryCode,
-		       A.WAGES_AMT,
+		       FORMAT(A.WAGES_AMT, 0) AS wagesAmt,
 		       A.JOIN_DATE,
 		       IFNULL(A.RETR_DATE, '-') AS retrDate,
 		       IFNULL(H.DETAIL_CODE_NAME, '') AS workArea,
@@ -181,7 +181,7 @@
 				AND A.RETR_DATE IS NOT NULL
 			</if>
 			<if test="searchKeyword != null and searchKeyword != ''">
-				AND B.DETAIL_CODE_NAME = #{searchKeyword}
+				AND B.DETAIL_CODE = #{searchKeyword}
 			</if>
 	</select>
 	

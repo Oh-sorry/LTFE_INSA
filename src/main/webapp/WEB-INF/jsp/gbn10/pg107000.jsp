@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/reset.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/newStyle.css'/>">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous">
 <%-- <link rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>"> --%>
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
 <script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
@@ -23,6 +24,7 @@
 <script src="<c:url value='/js/loadingoverlay.min.js'/>"></script>
 <script src="<c:url value='/js/script.js'/>"></script>
 <script src="<c:url value='/js/common.js'/>"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
 <title>(주)엠씨에스텍 인사급여시스템</title>
 
@@ -30,6 +32,17 @@
 
 /* 검색 기능 */
 function goReload() {
+	if($('[id=listForm] #joinMonth').val().trim() != '') {
+		if($('[id=listForm] #joinYear').val().trim() == '') {
+			alert("연도를 먼저 선택해주세요.");
+		} else {
+			goSelect();
+		}
+	} else {
+		goSelect();
+	}
+}
+function goSelect() {
 	document.listForm.action = "<c:url value='/gbn10/pg107000.do'/>";
 	document.listForm.submit();
 }
@@ -39,6 +52,16 @@ function goExcel() {
 	document.listForm.action = "<c:url value='/gbn10/pg107000Excel.do'/>";
 	document.listForm.submit();
 	
+	loadingOn();
+
+	FILEDOWNLOAD_INTERVAL = setInterval(function() {
+		console.log($.cookie("fileDownloadToken"));
+		if ($.cookie("fileDownloadToken") != null) {
+			$.removeCookie('fileDownloadToken');
+	        clearInterval(FILEDOWNLOAD_INTERVAL);
+	        loadingOff();
+	    }
+	}, 500);
 }
 
 </script>
@@ -64,36 +87,28 @@ function goExcel() {
 						<h3>입/퇴사자 현황</h3>
 						<div class="section">
 							<div class="search_Area m_b_20">
-	                            <table>
-	                                <colgroup>
-	                                    <col style="width:7%" />
-	                                    <col style="" />
-	                                </colgroup>
-	                                <tbody>
-	                                    <tr>
-	                                       <td>
-	                                        		<form:select path="joinYear" value="${searchFormData.joinYear}">
-	                                        			<form:option value="" label="선택" />
-		                                        		<c:forEach var="yearList" items="${yearList}" varStatus="status">
-		                                        			<form:option value="${yearList.joinYear}" label="${yearList.joinYear}" />
-		                                        		</c:forEach>
-	                                        		</form:select>
-	                                        </td>
-	                                        <th>년</th>
-	                                        
-	                                        <td>
-	                                        		<form:select path="joinMonth" value="${searchFormData.joinMonth}">
-	                                        			<form:option value="" label="선택" />
-		                                        		<c:forEach var="monthList" items="${monthList}" varStatus="status">
-		                                        			<form:option value="${monthList.joinMonth}" label="${monthList.joinMonth}" />
-		                                        		</c:forEach>
-	                                        		</form:select>
-	                                        </td>
-	                                        <th>월</th>
-	                                        
-	                                        	                                        
-	                                        <th>입/퇴사 구분</th>
-	                                        <td>
+	                                <dl>
+	                                	<dd>
+	                                        <form:select path="joinYear" value="${searchFormData.joinYear}">
+	                                        	<form:option value="" label="선택" />
+		                                      		<c:forEach var="yearList" items="${yearList}" varStatus="status">
+		                                      			<form:option value="${yearList.joinYear}" label="${yearList.joinYear}" />
+		                                      		</c:forEach>
+	                                       	</form:select>
+	                                       	<span>년</span>
+                                       		<form:select path="joinMonth" value="${searchFormData.joinMonth}">
+                                       			<form:option value="" label="선택" />
+                                        		<c:forEach var="monthList" items="${monthList}" varStatus="status">
+                                        			<form:option value="${monthList.joinMonth}" label="${monthList.joinMonth}" />
+                                        		</c:forEach>
+                                       		</form:select>
+                                       		<span>월</span>
+                                       	</dd>
+                                       </dl>
+                                       
+                                       <dl>
+	                                       <dt>입/퇴사 구분</dt>
+	                                        <dd>
 	                                            <label></label>
 	                                              <form:select path="detailCode" value="${searchFormData.detailCode}">
 									     	   	  	<form:option value="0" label="전체" />
@@ -101,10 +116,8 @@ function goExcel() {
 	                                        		<form:option value="2" label="퇴사" />
 									      		  </form:select>
 									      		  <a href="javascript:goReload()" class="btn_small bt_grey">검색</a>
-	                                        </td>
-	                                    </tr>
-	                                </tbody>
-	                            </table>
+	                                        </dd>
+	                                    </dl>
 	                        </div>
 							<div class="section">
 	                        	<div id="table-scroll" class="table-scroll" style="height:577px; margin:0;">
@@ -149,7 +162,7 @@ function goExcel() {
 														<td><c:out value="${result.repreNum}" /></td>
 														<td><c:out value="${result.payGrade2}" /></td>
 														<td><c:out value="${result.retrDate}" /></td>
-														<td><c:out value="${result.stringWagesAmt}" /></td>
+														<td><c:out value="${result.wagesAmt}" /></td>
 												</tr>
 											</c:forEach>
 										</tbody>

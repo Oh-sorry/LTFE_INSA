@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pg102000Sql">
+	
+	<select id="selectPg102000EduList" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="com.mcst.dto.gbn10.pg102000Dto">
+		SELECT a.name,
+		       a.pern_no,
+		       c.detail_code_name AS deptFullName,
+		       d.detail_code_name AS postCode,
+		       IFNULL(b.edu_start_date, '-') AS eduStartDate,
+		       IFNULL(b.edu_end_date, '-') AS eduEndDate,
+		       b.edu_title,
+		       b.edu_sponsor,
+		       e.detail_code_name AS eduTypeCode,
+		       f.detail_code_name AS eduMethodCode,
+		       case when b.join_ba = '1' then '전' when b.join_ba = '2' then '후' else '-' end AS join_ba,
+		       FORMAT(b.edu_expense, 0) AS eduExpense, 
+		       FORMAT(b.edu_refund, 0) AS eduRefund,
+		       FORMAT(b.edu_real_expense, 0) AS eduRealExpense,
+		       b.realfile AS realfile,
+		       b.servfile AS servfile,
+		       b.seq
+		FROM   hpa100t a,
+		       hte100t b,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H002'
+		       )
+		       c,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H005'
+		       )
+		       d,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H058'
+		       )
+		       e,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H059'
+		       )
+		       f
+		WHERE  a.pern_no   = b.pern_no
+		AND    a.dept_code = c.detail_code (+)
+		AND    a.post_code = d.detail_code (+)
+		AND    b.edu_type_code = e.detail_code(+)
+		AND    b.edu_method_code = f.detail_code(+)
+			<if test="sJoinRetr != null and sJoinRetr == 1">
+				AND A.RETR_DATE IS NULL
+			</if>
+			<if test="sJoinRetr != null and sJoinRetr == 2">
+				AND A.RETR_DATE IS NOT NULL
+			</if>
+			<if test="sStr != null and sStr != ''">				
+				AND (A.NAME LIKE '%' || #{sStr} || '%' OR A.PERN_NO LIKE '%' || #{sStr} || '%')
+			</if>
+			<if test="sJoinBa != null and sJoinBa != ''">				
+				AND B.JOIN_BA = #{sJoinBa}
+			</if>
+			<if test="sEduType != null and sEduType != ''">				
+				AND E.DETAIL_CODE = #{sEduType}
+			</if>
+			<if test="sStartDate != null and sStartDate != '' and sEndDate != null and sEndDate != ''">				
+				AND (B.EDU_START_DATE BETWEEN REPLACE(#{sStartDate}, '-', '') AND REPLACE(#{sEndDate}, '-', '') 
+				OR B.EDU_END_DATE BETWEEN REPLACE(#{sStartDate}, '-', '') AND REPLACE(#{sEndDate}, '-', ''))
+			</if>
+			<if test="sTitle != null and sTitle != ''">				
+				AND (lower(B.EDU_TITLE) LIKE '%' || lower(#{sTitle}) || '%' OR upper(B.EDU_TITLE) LIKE '%' || upper(#{sTitle}) || '%')
+			</if>
+		ORDER BY B.EDU_START_DATE	
+	</select>
+	
+	<select id="selectPg102000EduTypeList" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="com.mcst.dto.gbn10.pg102000Dto">
+		<!-- SELECT   a.edu_type_code AS eduCode,
+		         b.detail_code_name AS eduTypeCode
+		FROM     hte100t a,
+		         bco100t b
+		WHERE    a.edu_type_code = b.detail_code
+		AND      b.com_code      = 'H058'
+		GROUP BY a.edu_type_code -->
+		
+		SELECT a.detail_code AS eduCode,
+		       a.detail_code_name AS eduTypeCode
+		FROM   bco100t a
+		WHERE  a.com_code                   = 'H058'
+		AND    a.detail_code_name IS NOT NULL;
+	</select>
+	
+	<!-- <select id="selectPg102000DayList1" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="com.mcst.dto.gbn10.pg102000Dto">
+		<![CDATA[
+		SELECT TO_CHAR(TO_DATE(${eduStartDate}, 'YYYYMM') + NUM - 1, 'YYYY-MM-DD') AS YYYYMMDD
+		FROM   (SELECT ROWNUM AS NUM
+		       FROM    DUAL CONNECT BY LEVEL <= ROUND(ADD_MONTHS(TO_DATE(${eduEndDate}, 'YYYYMM'), 1) - TO_DATE(${eduStartDate}, 'YYYYMM'))
+		       )
+		]]> 
+	</select>
+	
+	<select id="selectPg102000DayList2" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="com.mcst.dto.gbn10.pg102000Dto">
+		<![CDATA[
+		SELECT TO_CHAR(TO_DATE(${eduStartDate}, 'YYYYMMDD') + NUM - 1, 'YYYY-MM-DD') AS YYYYMMDD
+		FROM   (SELECT ROWNUM AS NUM
+		       FROM    DUAL CONNECT BY LEVEL <= ROUND(TO_DATE(${eduEndDate}, 'YYYYMMDD') + 1 - TO_DATE(${eduStartDate}, 'YYYYMMDD'))
+		       )
+		]]>
+	</select> -->
+
+	<select id="selectPg102000SearchList" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="com.mcst.dto.gbn10.pg102000Dto">
+		SELECT A.PERN_NO, A.NAME
+		FROM   HPA100t A
+		WHERE  1=1
+			<if test="sStr != null and sStr != ''">
+				AND (A.NAME LIKE '%' || #{sStr} || '%' OR A.PERN_NO LIKE '%' || #{sStr} || '%')
+			</if>
+	</select>
+	
+	<select id="selectPg102000Info" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="com.mcst.dto.gbn10.pg102000Dto">
+		SELECT a.name,
+		       a.pern_no,
+		       b.seq,
+		       b.edu_start_date,
+		       b.edu_end_date,
+		       b.edu_title,
+		       b.edu_sponsor,
+		       c.detail_code AS eduMethodCode,
+		       d.detail_code AS eduTypeCode,
+		       b.edu_contents,
+		       b.edu_object,
+		       b.join_ba,
+		       b.edu_expense,
+		       b.edu_refund,
+		       b.edu_real_expense,
+		       b.realfile,
+		       b.servfile
+		FROM   hpa100t a,
+		       hte100t b,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H059'
+		       )
+		       c,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H058'
+		       )
+		       d
+		WHERE  a.pern_no         = b.pern_no
+		AND    b.edu_method_code = c.detail_code(+)
+		AND    b.edu_type_code   = d.detail_code(+)
+		AND    A.PERN_NO = #{pernNo}
+		AND    B.SEQ = #{seq}
+	</select>
+	
+	<select id="selectPg102000Check" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="java.lang.Integer">
+		SELECT COUNT(1) CNT
+		FROM   hte100t
+		WHERE  pern_no = #{pernNo}
+		AND    seq     = #{seq}
+	</select>
+	
+	<update id="updatePg102000" parameterType="com.mcst.dto.db.hte100tDto">		
+		MERGE INTO       HTE100T A
+		USING            DUAL
+		ON (A.PERN_NO = #{pernNo} AND A.SEQ = #{seq})
+		WHEN MATCHED THEN 
+			UPDATE SET A.EDU_START_DATE   = REPLACE(#{eduStartDate}, '-', ''),
+		               A.EDU_END_DATE     = REPLACE(#{eduEndDate}, '-', ''),
+		               A.EDU_TITLE        = #{eduTitle},
+		               A.EDU_TYPE_CODE    = #{eduTypeCode},
+		               A.EDU_METHOD_CODE  = #{eduMethodCode},
+		               A.EDU_SPONSOR      = #{eduSponsor},
+		               A.EDU_CONTENTS     = #{eduContents},
+		               A.EDU_OBJECT       = #{eduObject},
+		               A.EDU_EXPENSE	  = #{eduExpense},
+		               A.EDU_REFUND		  = #{eduRefund},
+		               A.REALFILE		  = #{realfile},
+		               A.SERVFILE 		  = #{servfile},
+		               A.EDU_REAL_EXPENSE = #{eduRealExpense},
+		               A.JOIN_BA		  = #{joinBa}
+		WHEN NOT MATCHED THEN 
+			INSERT (
+					A.PERN_NO, 
+					A.SEQ, 
+					A.EDU_START_DATE, 
+					A.EDU_END_DATE, 
+					A.EDU_TITLE, 
+					A.EDU_TYPE_CODE, 
+					A.EDU_METHOD_CODE, 
+					A.EDU_SPONSOR, 
+					A.EDU_CONTENTS, 
+					A.EDU_OBJECT, 
+					A.EDU_EXPENSE, 
+					A.EDU_REFUND, 
+					A.REALFILE, 
+					A.SERVFILE, 
+					A.EDU_REAL_EXPENSE, 
+					A.JOIN_BA
+					) 
+			VALUES (
+					#{pernNo},
+					seq_hte100t.next_value,
+					REPLACE(#{eduStartDate}, '-', ''),
+					REPLACE(#{eduEndDate}, '-', ''),
+					#{eduTitle},
+					#{eduTypeCode},
+					#{eduMethodCode},
+					#{eduSponsor},
+					#{eduContents},
+					#{eduObject},
+					#{eduExpense},
+					#{eduRefund},
+					#{realfile},
+					#{servfile},
+					#{eduRealExpense},
+					#{joinBa}
+					)
+	</update>
+	
+	<delete id="deletePg102000" parameterType="com.mcst.dto.gbn10.pg102000Dto">
+		DELETE
+		FROM   hte100t
+		WHERE  pern_no = ${pernNo}
+		AND    seq     = ${seq}
+	</delete>
+
+
+	<select id="excelList" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="egovMap">
+		SELECT a.name,
+		       a.pern_no,
+		       IFNULL(c.detail_code_name, '') AS deptFullName,
+		       IFNULL(d.detail_code_name, '') AS postCode,
+		       IFNULL(b.edu_start_date, '') AS eduStartDate,
+		       IFNULL(b.edu_end_date, '') AS eduEndDate,
+		       b.edu_title,
+		       IFNULL(b.edu_sponsor, '') AS eduSponsor,
+		       IFNULL(e.detail_code_name, '') AS eduTypeCode,
+		       IFNULL(f.detail_code_name, '') AS eduMethodCode,
+		       case when b.join_ba = '1' then '전' when b.join_ba = '2' then '후' else '' end AS join_ba,
+		       IFNULL(FORMAT(b.edu_expense, 0), '') AS eduExpense, 
+		       IFNULL(FORMAT(b.edu_refund, 0), '') AS eduRefund,
+		       IFNULL(FORMAT(b.edu_real_expense, 0), '') AS eduRealExpense,
+		       IFNULL(b.realfile, '') AS realfile,
+		       IFNULL(b.servfile, '') AS servfile
+		FROM   hpa100t a,
+		       hte100t b,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H002'
+		       )
+		       c,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H005'
+		       )
+		       d,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H058'
+		       )
+		       e,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H059'
+		       )
+		       f
+		WHERE  a.pern_no   = b.pern_no
+		AND    a.dept_code = c.detail_code (+)
+		AND    a.post_code = d.detail_code (+)
+		AND    b.edu_type_code = e.detail_code(+)
+		AND    b.edu_method_code = f.detail_code(+)
+			<if test="sJoinRetr != null and sJoinRetr == 1">
+				AND A.RETR_DATE IS NULL
+			</if>
+			<if test="sJoinRetr != null and sJoinRetr == 2">
+				AND A.RETR_DATE IS NOT NULL
+			</if>
+			<if test="sStr != null and sStr != ''">				
+				AND (A.NAME LIKE '%' || #{sStr} || '%' OR A.PERN_NO LIKE '%' || #{sStr} || '%')
+			</if>
+			<if test="sJoinBa != null and sJoinBa != ''">				
+				AND B.JOIN_BA = #{sJoinBa}
+			</if>
+			<if test="sEduType != null and sEduType != ''">				
+				AND E.DETAIL_CODE = #{sEduType}
+			</if>
+			<if test="sStartDate != null and sStartDate != '' and sEndDate != null and sEndDate != ''">				
+				AND (B.EDU_START_DATE BETWEEN #{sStartDate} AND #{sEndDate} OR B.EDU_END_DATE BETWEEN #{sStartDate} AND #{sEndDate})
+			</if>
+			<if test="sTitle != null and sTitle != ''">				
+				AND (lower(B.EDU_TITLE) LIKE '%' || lower(#{sTitle}) || '%' OR upper(B.EDU_TITLE) LIKE '%' || upper(#{sTitle}) || '%')
+			</if>
+	</select>
+</mapper>
