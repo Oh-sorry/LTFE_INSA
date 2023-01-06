@@ -13,15 +13,15 @@
 <meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="<c:url value='/css/jquery-ui.min.css'/>" />
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/resetN.css'/>"> <!-- css 파일 교체함  -->
-<link rel="stylesheet" href="<c:url value='/css/styleN.css'/>"> <!-- css 파일 교체함  -->
+<link rel="stylesheet" href="<c:url value='/css/reset.css'/>"> <!-- css 파일 교체함  -->
+<link rel="stylesheet" href="<c:url value='/css/style.css'/>"> <!-- css 파일 교체함  -->
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous"> -->
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
 <script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script src="<c:url value='/jqgrid/jquery.jqgrid.src.js'/>"></script>
 <script src="<c:url value='/jqgrid/i18n/grid.locale-kr.js'/>"></script>
 <script src="<c:url value='/js/loadingoverlay.min.js'/>"></script>
-<script src="<c:url value='/js/scriptN.js'/>"></script> <!-- css 파일 교체함  -->
+<script src="<c:url value='/js/script.js'/>"></script> <!-- css 파일 교체함  -->
 <script src="<c:url value='/js/common.js'/>"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script> <!-- 쿠키 사용을 위해 추가 -->
 
@@ -34,6 +34,8 @@
 </style>
 
 <script language="javascript">
+	var popup;
+	window.onunload = function() { popup.close(); } // 현재 팝업 새로고침 또는 닫기 시 자식 팝업도 함께 닫히도록
 
 	function checkOnlyOne(element) {
 		
@@ -66,7 +68,7 @@
 			}			
 		}
 		document.listForm.action = "<c:url value='/gbn10/pg102000.do'/>";
-		document.listForm.submit();		
+		document.listForm.submit();
 	}
 	/* function showPop(){
 
@@ -93,6 +95,9 @@
 
 	} */
 	
+	function fileDownload(realfile, servfile) {
+		window.open("${pageContext.request.contextPath}/gbn10/fileDownload.do?realfile="+realfile + "&servfile="+servfile);
+	}
 	function excelDown() { // 데이터가 너무 많으면 오래 걸림 - 이때 다른 버튼 못누르게 막도록 작성
 		document.listForm.action = "<c:url value='/gbn10/pg102000excelDownload.do'/>";
 		document.listForm.submit();
@@ -112,10 +117,18 @@
 	function goInput() {
 		loadingOn();
 		
-		window.open('about:blank','input','width=800px,height=725px,top=0,left=0,toolbar=no,status=no,menubar=no,location=no,scrollbars=yes')
+		popup = window.open('about:blank','input','width=800px,height=725px,top=0,left=0,toolbar=no,status=no,menubar=no,location=no,scrollbars=yes')
 		$('#inputForm').attr("action", "<c:url value='/gbn10/pg102000Input.do'/>");
 		$('#inputForm').attr("target", "input");
 		inputForm.submit();
+		
+		POPUP_INTERVAL = setInterval(function() {
+			console.log(1);
+			if(typeof(popup)=='undefined' || popup.closed) {
+				clearInterval(POPUP_INTERVAL);
+				loadingOff();
+			}		
+		}, 250);
 	}
 	function goModify() {
 		
@@ -139,10 +152,19 @@
 						
 		loadingOn();
 
-		window.open('about:blank','input','width=800px,height=725px,top=0,left=0,toolbar=no,status=no,menubar=no,location=no,scrollbars=yes')
+		popup = window.open('about:blank','input','width=800px,height=725px,top=0,left=0,toolbar=no,status=no,menubar=no,location=no,scrollbars=yes')
 		$('#inputForm').attr("action", "<c:url value='/gbn10/pg102000Modify.do'/>");
 		$('#inputForm').attr("target", "input");
 		inputForm.submit();
+		
+		POPUP_INTERVAL = setInterval(function() {
+			console.log(1);
+			if(typeof(popup)=='undefined' || popup.closed) {
+				clearInterval(POPUP_INTERVAL);
+				goReload();
+				loadingOff();
+			}		
+		}, 250);
 	}
 	function goDelete() {
 		var checked = false;
@@ -324,7 +346,7 @@
 										    	</c:when>
 										    	<c:otherwise>
 											    	<td rowspan="2" id="last">
-											    		<a href="downloadFile.do?realfile=<c:out value='${result.realfile}'/>&servfile=<c:out value='${result.servfile}'/>">
+											    		<a href="javascript:fileDownload('${result.realfile}', '${result.servfile}')">
 											    			<img src="<c:url value='/images/ico_attachfile.png' />" alt="첨부파일">
 											    		</a>
 											    	</td>    	

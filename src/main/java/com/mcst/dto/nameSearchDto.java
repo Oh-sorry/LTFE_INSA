@@ -12,6 +12,21 @@ public class nameSearchDto implements Serializable {
 	private String pernNo;
 	private String name;
 	private String searchName;
+	private String joinGubun;
+
+
+	/**
+	 * @return the joinGubun
+	 */
+	public String getJoinGubun() {
+		return joinGubun;
+	}
+	/**
+	 * @param joinGubun the joinGubun to set
+	 */
+	public void setJoinGubun(String joinGubun) {
+		this.joinGubun = joinGubun;
+	}
 	/**
 	 * @return the pernNo
 	 */

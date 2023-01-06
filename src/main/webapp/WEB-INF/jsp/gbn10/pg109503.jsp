@@ -13,15 +13,15 @@
 <meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="<c:url value='/css/jquery-ui.min.css'/>" />
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/resetN.css'/>"> <!-- css 파일 교체함  -->
-<link rel="stylesheet" href="<c:url value='/css/styleN.css'/>"> <!-- css 파일 교체함  -->
+<link rel="stylesheet" href="<c:url value='/css/reset.css'/>"> <!-- css 파일 교체함  -->
+<link rel="stylesheet" href="<c:url value='/css/style.css'/>"> <!-- css 파일 교체함  -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous">
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
 <script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script src="<c:url value='/jqgrid/jquery.jqgrid.src.js'/>"></script>
 <script src="<c:url value='/jqgrid/i18n/grid.locale-kr.js'/>"></script>
 <script src="<c:url value='/js/loadingoverlay.min.js'/>"></script>
-<script src="<c:url value='/js/scriptN.js'/>"></script> <!-- css 파일 교체함  -->
+<script src="<c:url value='/js/script.js'/>"></script> <!-- css 파일 교체함  -->
 <script src="<c:url value='/js/common.js'/>"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script> <!-- 쿠키 사용을 위해 추가 -->
 

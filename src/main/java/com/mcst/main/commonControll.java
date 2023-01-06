@@ -38,25 +38,35 @@ public class commonControll {
     protected static Logger logger = Logger.getLogger(Main.class.getName());
 
     @RequestMapping(value="/nameSearch.ajax", method={RequestMethod.GET})
-    public @ResponseBody Map nameSearch(HttpServletRequest request, HttpServletResponse reponse, HttpSession session, Model model) throws Exception {
+    public @ResponseBody Map<String, Object> nameSearch(HttpServletRequest request, HttpServletResponse reponse, HttpSession session, Model model) throws Exception {
 
-    	logger.info(request.getParameter("term"));
+    	//logger.info(request.getParameter("term"));
 
-    	String searchName = request.getParameter("term");
+    	String searchName = request.getParameter("searchName");
+    	String joinGubun = request.getParameter("joinGubun");
+
+    	if (joinGubun == null || "".equals(joinGubun)) joinGubun = "T";
+
+    	//logger.info("joinGubun============>"+joinGubun);
+    	//logger.info("searchName============>"+searchName);
 
     	nameSearchDto nameSearchDto = new nameSearchDto();
 
     	nameSearchDto.setSearchName(searchName);
+    	nameSearchDto.setJoinGubun(joinGubun);
 
-    	List<nameSearchDto> nameSearchDtoList = commonService.selectSearchName(nameSearchDto);
+    	//List<nameSearchDto> nameSearchDtoList = commonService.selectSearchName(nameSearchDto);
+    	List<Map<String, Object>> nameSearchDtoList = commonService.selectSearchName(nameSearchDto);
 
     	Map<String, Object> result = new HashMap<String, Object>();
+    	result.put("resultList", nameSearchDtoList);
 
-    	for (int i = 0; i < nameSearchDtoList.size(); i++) {
-    		result.put(nameSearchDtoList.get(i).getPernNo(), nameSearchDtoList.get(i).getName());
+    	//for (int i = 0; i < nameSearchDtoList.size(); i++) {
+    	//	result.put("pernNo",nameSearchDtoList.get(i).getPernNo());
+    	//	result.put("name", nameSearchDtoList.get(i).getName());
 
     		// logger.info(nameSearchDtoList.get(i).getName());
-    	}
+    	//}
 
 		return result;
     }

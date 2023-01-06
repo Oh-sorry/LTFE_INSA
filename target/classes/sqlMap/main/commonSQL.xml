@@ -3,10 +3,17 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="commonSql">
 
-	<select id="selectSearchName" parameterType="com.mcst.dto.nameSearchDto" resultType="com.mcst.dto.nameSearchDto">
-		SELECT PERN_NO, PERN_NO || ' '|| NAME ||' ('|| NVL(SUBSTR(AESDECRYPT(BIRT_DATE),1,4),'')||'.'||NVL(SUBSTR(AESDECRYPT(BIRT_DATE),5,2),'')||'.'||NVL(SUBSTR(AESDECRYPT(BIRT_DATE),7,2),'')||') '||NVL(DEPT_NAME,'') NAME
+	<select id="selectSearchName" parameterType="com.mcst.dto.nameSearchDto" resultType="map">
+		SELECT PERN_NO, DECODE(RETR_DATE,NULL,'(재직)','(퇴직)')||' '||PERN_NO || ' '|| NAME ||' ('|| NVL(SUBSTR(AESDECRYPT(BIRT_DATE),1,4),'')||'.'||NVL(SUBSTR(AESDECRYPT(BIRT_DATE),5,2),'')||'.'||NVL(SUBSTR(AESDECRYPT(BIRT_DATE),7,2),'')||') '||NVL(DEPT_NAME,'') NAME
   		  FROM HPA100T USE INDEX(hpa100t_idx01)
          WHERE (NAME LIKE #{searchName}||'%' OR PERN_NO LIKE #{searchName}||'%')
+		<if test='joinGubun == "J"'>
+			AND RETR_DATE IS NULL
+		</if>
+		<if test='joinGubun == "R"'>
+			AND RETR_DATE IS NOT NULL
+		</if>
+		ORDER BY DECODE(RETR_DATE,NULL,0,1), NAME
 	</select>
 
 	<select id="selectPernInfo" parameterType="java.lang.String" resultType="com.mcst.dto.pernInfoDto">

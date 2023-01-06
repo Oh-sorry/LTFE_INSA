@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="<c:url value='/css/jquery-ui.min.css'/>" />
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/reset.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/newStyle.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/newStyle_back.css'/>">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous">
 <%-- <link rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>"> --%>
 <script src="<c:url value='/js/jquery.min.js'/>"></script>

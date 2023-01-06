@@ -14,15 +14,16 @@
 <link rel="stylesheet" href="<c:url value='/css/jquery-ui.min.css'/>" />
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/reset.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/newStyle.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/newStyle_back.css'/>">
 <%-- <link rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>"> --%>
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
 <script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script src="<c:url value='/jqgrid/jquery.jqgrid.src.js'/>"></script>
 <script src="<c:url value='/jqgrid/i18n/grid.locale-kr.js'/>"></script>
 <script src="<c:url value='/js/loadingoverlay.min.js'/>"></script>
-<script src="<c:url value='/js/script.js'/>"></script>
 <script src="<c:url value='/js/common.js'/>"></script>
+<script src="<c:url value='/js/script.js'/>"></script>
+
 
 <title>(주)엠씨에스텍 인사급여시스템</title>
 
@@ -39,7 +40,14 @@ function goReload() {
 function goExcel() {
 	document.listForm.action = "<c:url value='/gbn10/pg105500Excel.do'/>";
 	document.listForm.submit();
-	
+}
+
+//사번/성명 자동완성
+$( function() {
+	setSearchNameAutoComplete("pernNo");
+});
+function goSearchNameAfterSelect() {
+	goReload();
 }
 </script>
 </head>
@@ -132,12 +140,12 @@ function goExcel() {
 	                                        		</form:select>
 	                                        </td>
 	                                        
-	                                        <th>성명</th>
+	                                        <!-- <th>성명</th>
 	                                        <td>
 	                                        	<label></label>
 	                                        	<input type="text" id="name" name="name">
-	                                        </td>
-	                                        <th>사번</th>
+	                                        </td> -->
+	                                        <th>성명/사번</th>
 	                                        <td>
 	                                        	<label></label>
 	                                        	<input type="text" id="pernNo" name="pernNo">

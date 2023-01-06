@@ -1,6 +1,7 @@
 package com.mcst.main.service.Impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -18,7 +19,7 @@ public class commonServiceImpl extends EgovAbstractServiceImpl implements common
     @Resource(name = "commonDao")
     private commonDao commonDao;
 
-    public List<nameSearchDto> selectSearchName(nameSearchDto nameSearchDto) throws Exception {
+    public List<Map<String, Object>> selectSearchName(nameSearchDto nameSearchDto) throws Exception {
     	return commonDao.selectSearchName(nameSearchDto);
     }
 

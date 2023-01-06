@@ -44,15 +44,7 @@ public class pg102000Dao extends EgovAbstractMapper {
 		return selectList("pg102000Sql.excelList", pg102000Dto);
 	}
 
-	
-	
-
-	/*
-	 * public List<pg102000Dto> selectPg102000DayList1(pg102000Dto pg102000Dto) {
-	 * return selectList("pg102000Sql.selectPg102000DayList1", pg102000Dto); }
-	 * 
-	 * public List<pg102000Dto> selectPg102000DayList2(pg102000Dto pg102000Dto) {
-	 * return selectList("pg102000Sql.selectPg102000DayList2", pg102000Dto); }
-	 */
-
+	public int updateFilePg102000(hte100tDto hte100tDto) throws Exception {
+		return update("pg102000Sql.updateFilePg102000", hte100tDto);
+	}
 }

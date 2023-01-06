@@ -2,8 +2,204 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="pg103000SQL">
 
-	<select id="selectPg103000List" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="com.mcst.dto.gbn10.pg103000Dto">
+	<select id="selectPg103000DeptList1" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="com.mcst.dto.gbn10.pg103000Dto">
+		SELECT   SUBSTR(DETAIL_CODE, 0, 2) AS dept_code1,
+		         DETAIL_CODE_NAME          AS dept_name1
+		FROM     BCO100T
+		WHERE    COM_CODE                   ='H002'
+		AND      DETAIL_CODE_NAME IS NOT NULL
+		AND      SUBSTR(DETAIL_CODE, 1, 2) != '76'
+		GROUP BY SUBSTR(DETAIL_CODE,1,2)
+		ORDER BY DETAIL_CODE
+	</select>
 	
+	<select id="selectPg103000DeptList2" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="com.mcst.dto.gbn10.pg103000Dto">
+		SELECT   SUBSTR(DETAIL_CODE, 0, 2)                                  AS dept_code1,
+		         DETAIL_CODE                                                AS dept_code2,
+		         SUBSTR(DETAIL_CODE_NAME, INSTR(DETAIL_CODE_NAME, ' ') + 1) AS dept_name2
+		FROM     BCO100T
+		WHERE    COM_CODE            = 'H002'
+		AND      DETAIL_CODE_NAME LIKE '% %'
+		ORDER BY DETAIL_CODE
+	</select>
+	
+	<select id="selectPg103000CertGbn" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="com.mcst.dto.gbn10.pg103000Dto">
+		SELECT   a.cert_gbn,
+		         b.detail_code_name AS cert_name
+		FROM     hzz140t a,
+		         ( SELECT detail_code,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H012'
+		         AND     detail_code IN ('1',
+		                                 '2')
+		         )
+		         b
+		WHERE    b.detail_code = a.cert_gbn (+)
+		GROUP BY a.cert_gbn
+	</select>
+	
+	<select id="selectPg103000List" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="com.mcst.dto.gbn10.pg103000Dto">
+		SELECT b.exp_date,
+		       b.pern_no,
+		       b.usrname,
+		       b.usrrepre_num,
+		       a.join_date,
+		       a.retr_date,
+		       a.dept_code,
+		       a.dept_name,
+		       b.cert_gbn,
+		       b.exp_resn,
+		       b.exp_cnt,
+		       b.han_date,
+		       b.seq
+		FROM   hpa100t a,
+		       hzz140t b
+		WHERE  a.pern_no = b.pern_no (+)
+		AND    b.pern_no IS NOT NULL
+		
+		<if test="usrname != null and usrname !=''">
+			AND b.usrname LIKE '%' || #{usrname} || '%'
+		</if>
+		
+		<if test="pernNo != null and pernNo !=''">
+			AND b.pern_no LIKE '%' || #{pernNo} || '%'
+		</if>
+		
+		<if test="deptCode != null and deptCode !=''">
+			AND (SUBSTR(a.dept_code, 0, 2) = #{deptCode} OR a.dept_code = #{deptCode})
+		</if>
+		
+		<if test="certGbn != null and certGbn !=''">
+			AND b.cert_gbn = #{certGbn}
+		</if>
+		
+		<if test="expStartDate != null and expStartDate != '' and expEndDate != null and expEndDate != ''">
+			AND (b.exp_date BETWEEN REPLACE(#{expStartDate}, '-', '') AND REPLACE(#{expEndDate}, '-', '') OR b.exp_date BETWEEN REPLACE(#{expStartDate}, '-', '') AND REPLACE(#{expEndDate}, '-', ''))
+		</if>
+		ORDER BY b.exp_date DESC
+		LIMIT #{recordCountPerPage} OFFSET #{pageIndex}
+		
+	</select>
+
+	<select id="pageListCnt" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="java.lang.Integer">
+		SELECT  COUNT(*)
+		FROM    hpa100t a,
+				hzz140t b
+		WHERE   a.pern_no = b.pern_no (+)
+		AND		b.pern_no IS NOT NULL
+	</select>
+
+	<select id="selectPg102000Check" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="java.lang.Integer">
+		SELECT COUNT(1) CNT
+		FROM   hte100t
+		WHERE  pern_no = #{pernNo}
+		AND    seq     = #{seq}
+	</select>
+	
+	<update id="updatePg103000" parameterType="com.mcst.dto.db.hzz140tDto">
+		MERGE
+		INTO             hzz140t A
+		USING            DUAL
+		ON 				 (
+						 A.PERN_NO = #{pernNo} AND A.SEQ = #{seq}
+		                 )
+		WHEN MATCHED     THEN 
+			  UPDATE SET A.usrname				   = #{usrname},
+		                 A.exp_date                = REPLACE(#{expDate}, '-', ''),
+		                 A.han_date                = REPLACE(#{hanDate}, '-', ''),
+		                 A.cert_gbn                = #{certGbn},
+		                 A.exp_cnt                 = #{expCnt},
+		                 A.usrrepre_num            = #{usrrepreNum},
+		                 A.work_period1            = #{workPeriod1},
+		                 A.work_period2            = #{workPeriod2},
+		                 A.work_period3            = #{workPeriod3},
+		                 A.usrfield1               = #{usrfield1},
+		                 A.usrfield2               = #{usrfield2},
+		                 A.exp_resn                = #{expResn},
+		                 A.usraddr                 = #{usraddr},
+		                 A.usrbirth                = #{usrbirth}
+		WHEN NOT MATCHED THEN 
+			  INSERT	 (
+			  			 A.pern_no, 
+			  			 A.SEQ, 
+			  			 A.usrname, 
+			  			 A.exp_date, 
+			  			 A.han_date, 
+			  			 A.cert_gbn, 
+			  			 A.exp_cnt, 
+			  			 A.usrrepre_num, 
+			  			 A.work_period1, 
+			  			 A.work_period2, 
+			  			 A.work_period3, 
+			  			 A.usrfield1, 
+			  			 A.usrfield2, 
+			  			 A.exp_resn, 
+			  			 A.usraddr, 
+			  			 A.usrbirth
+			  			 ) 
+			  VALUES
+		                 (
+		                  #{pernNo},
+		                  seq_hzz140t.next_value,
+		                  #{usrname},
+		                  REPLACE(#{expDate}, '-', ''),
+		                  REPLACE(#{hanDate}, '-', ''),
+		                  #{certGbn},
+		                  #{expCnt},
+		                  #{usrrepreNum},
+		                  #{workPeriod1},
+		                  #{workPeriod2},
+		                  #{workPeriod3},
+		                  #{usrfield1},
+		                  #{usrfield2},
+		                  #{expResn},
+		                  #{usraddr},
+		                  #{usrbirth}      
+		                 )
+	</update>
+
+	<select id="selectPg103000SearchList" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="com.mcst.dto.gbn10.pg103000Dto"> 
+		
+		SELECT a.pern_no,
+		       A.NAME AS usrname,
+		       a.repre_num AS usrrepreNum,
+		       a.join_date,
+		       a.retr_date,
+		       a.post_code,
+		       c.detail_code_name AS post_name,
+		       a.pay_grade,
+		       d.detail_code_name AS pay_name,
+		       b.DETAIL_CODE      AS dept_code,
+		       a.dept_name,
+		       a.birt_date,
+		       a.kor_addr AS usraddr
+		FROM   hpa100t a,
+		       (SELECT DETAIL_CODE,
+		               detail_code_name
+		       FROM    bco100t
+		       WHERE   com_code = 'H002'
+		       )
+		       b,
+		       (SELECT DETAIL_CODE,
+		               detail_code_name
+		       FROM    bco100t
+		       WHERE   com_code = 'H005'
+		       )
+		       c,
+		       (SELECT DETAIL_CODE,
+		               detail_code_name
+		       FROM    bco100t
+		       WHERE   com_code = 'H004'
+		       )
+		       d
+		WHERE  a.dept_code = b.DETAIL_CODE (+)
+		AND    a.post_code = c.DETAIL_CODE (+)
+		AND    a.pay_grade = d.DETAIL_CODE (+)
+		<if test="sStr != null and sStr!= ''">
+			AND (A.NAME LIKE '%' || #{sStr} || '%' OR A.PERN_NO LIKE '%' || #{sStr} || '%')
+		</if>
+		ORDER BY a.pern_no
 	</select>
 
 </mapper>

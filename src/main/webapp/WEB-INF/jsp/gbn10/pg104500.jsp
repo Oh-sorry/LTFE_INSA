@@ -14,21 +14,19 @@
 <link rel="stylesheet" href="<c:url value='/css/jquery-ui.min.css'/>" />
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/reset.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/newStyle.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/newStyle_back.css'/>">
 <%-- <link rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>"> --%>
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
 <script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script src="<c:url value='/jqgrid/jquery.jqgrid.src.js'/>"></script>
 <script src="<c:url value='/jqgrid/i18n/grid.locale-kr.js'/>"></script>
 <script src="<c:url value='/js/loadingoverlay.min.js'/>"></script>
-<script src="<c:url value='/js/script.js'/>"></script>
+<script src="<c:url value='/js/newScript_back.js'/>"></script>
 <script src="<c:url value='/js/common.js'/>"></script>
 
 <title>(주)엠씨에스텍 인사급여시스템</title>
 
-</head>
-<body>
-<script language="javascript">
+<script>
 
 /* 검색 기능 */
 function goReload() {
@@ -40,7 +38,47 @@ function goReload() {
 function goExcel() {
 	document.listForm.action = "<c:url value='/gbn10/pg104500Excel.do'/>";
 	document.listForm.submit();
-	
+
+}
+
+//사번/성명 자동완성 ??
+var setSearchNameAutoComplete = function() {
+    var getId = arguments;
+
+	var hostIndex = location.href.indexOf(location.host) + location.host.length;
+	var ajaxUrl = location.href.substring(hostIndex, location.href.indexOf('/',hostIndex + 1));
+
+	$( "#"+getId[0] ).autocomplete({
+      source: function(request, response) {
+    	  $.ajax({
+    		  type : "get",
+    		  url: ajaxUrl+"/nameSearch.ajax",
+    		  data : {"joinGubun": "T", "searchName": $("#"+getId[0]).val()},
+              success : function(data) {
+                  response(
+                      $.map(data.resultList, function(item) {
+                    	  return {
+                              label : item.NAME,
+                              value : item.PERN_NO
+                          }
+                      })
+                  );
+              }
+    	  });
+      },
+      minLength: 1,
+      autoFocus : true,
+      select : function(event, ui) {
+    	  $("#"+getId[0]).val(ui.item.value)
+    	  goSearchNameAfterSelect();
+      }
+    });
+  };
+$( function() {
+	setSearchNameAutoComplete("pernNo");
+});
+function goSearchNameAfterSelect() {
+	goReload();
 }
 
 </script>
@@ -61,7 +99,7 @@ function goExcel() {
 							</ul>
 						</div>
 					</div>
-					
+
 					<form:form modelAttribute="pg104500Dto" id="listForm" name="listForm" method="post">
 						<h3>기본검색</h3>
 						<div class="section">
@@ -109,7 +147,7 @@ function goExcel() {
 														</ul>
 	                                        		</form:select>
 	                                        </td>
-	                                        
+
 	                                        <th>직위</th>
 	                                        <td>
 	                                        	<label></label>
@@ -126,7 +164,7 @@ function goExcel() {
 	                                        <td>
 	                                        	<label></label>
 	                                        		<form:select path="payGrade" value="${searchFormData.payGrade}">
-	                                        			<form:option value="" label="전체" />	
+	                                        			<form:option value="" label="전체" />
 		                                        		<c:forEach var="gbnList3" items="${gbnList3}" varStatus="status">
 		                                        			<form:option value="${gbnList3.payGrade}" label="${gbnList3.payName}" />
 		                                        		</c:forEach>
@@ -146,7 +184,7 @@ function goExcel() {
 	                                        <th>사번/성명</th>
 	                                        <td>
 	                                        	<label></label>
-	                                        	<input type="text" id="pernNo" name="pernNo">
+	                                        	<input type="text" id="pernNo" name="pernNo" value="${searchFormData.pernNo}">
 	                                        	<a href="javascript:goReload()" class="btn_small bt_grey">검색</a>
 	                                        </td>
 	                                    </tr>

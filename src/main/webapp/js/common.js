@@ -724,3 +724,39 @@ function removeHtml(text) {
 
 	return text;
 }
+
+/*
+사번/성명 자동완성
+*/
+var setSearchNameAutoComplete = function() {
+    var getId = arguments;
+
+	var hostIndex = location.href.indexOf(location.host) + location.host.length;
+	var ajaxUrl = location.href.substring(hostIndex, location.href.indexOf('/',hostIndex + 1));
+
+	$( "#"+getId[0] ).autocomplete({
+      source: function(request, response) {
+    	  $.ajax({
+    		  type : "get",
+    		  url: ajaxUrl+"/nameSearch.ajax",
+    		  data : {"joinGubun": "T", "searchName": $("#"+getId[0]).val()},
+              success : function(data) {
+                  response(
+                      $.map(data.resultList, function(item) {
+                    	  return {
+                              label : item.NAME,
+                              value : item.PERN_NO
+                          }
+                      })
+                  );
+              }
+    	  });
+      },
+      minLength: 1,
+      autoFocus : true,
+      select : function(event, ui) {
+    	  $("#"+getId[0]).val(ui.item.value)
+    	  goSearchNameAfterSelect();
+      }
+    });
+  };

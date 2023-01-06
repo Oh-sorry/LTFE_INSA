@@ -41,18 +41,7 @@ public class pg102000Dto implements Serializable {
 	private String eduRealExpense;			// 실비용
 	
 	private String eduContents;
-	private String eduObject;
-
-	
-	/////////// 임시 변수 추후에 파일 주소에 대한 데이터를 다룰예정
-	private String path;	
-	public String getPath() {
-		return path;
-	}
-	public void setPath(String path) {
-		this.path = path;
-	}
-	///////////
+	private String eduObject;	
 	
 	public String getsJoinRetr() {
 		return sJoinRetr;

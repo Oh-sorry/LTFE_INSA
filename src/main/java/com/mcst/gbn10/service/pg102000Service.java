@@ -20,20 +20,9 @@ public interface pg102000Service {
 	
 	public int updatePg102000(hte100tDto hte100tDto) throws Exception;
 
-	public int deletePg102000(pg102000Dto pg102000Dto) throws Exception;
-	
+	public int deletePg102000(pg102000Dto pg102000Dto) throws Exception;	
 	
 	public List<Map<String, Object>> excelList(pg102000Dto pg102000Dto) throws Exception;
 
-	
-	
-
-	/*
-	 * public List<pg102000Dto> selectPg102000DayList1(pg102000Dto pg102000Dto)
-	 * throws Exception;
-	 * 
-	 * public List<pg102000Dto> selectPg102000DayList2(pg102000Dto pg102000Dto)
-	 * throws Exception;
-	 */
-
+	public int updateFilePg102000(hte100tDto hte100tDto) throws Exception;
 }

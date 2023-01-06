@@ -12,14 +12,14 @@
 <meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="<c:url value='/css/jquery-ui.min.css'/>" />
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/resetN.css'/>"> <!-- css 파일 교체함  -->
-<link rel="stylesheet" href="<c:url value='/css/styleN.css'/>"> <!-- css 파일 교체함  -->
+<link rel="stylesheet" href="<c:url value='/css/reset.css'/>"> <!-- css 파일 교체함  -->
+<link rel="stylesheet" href="<c:url value='/css/style.css'/>"> <!-- css 파일 교체함  -->
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
 <script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script src="<c:url value='/jqgrid/jquery.jqgrid.src.js'/>"></script>
 <script src="<c:url value='/jqgrid/i18n/grid.locale-kr.js'/>"></script>
 <script src="<c:url value='/js/loadingoverlay.min.js'/>"></script>
-<script src="<c:url value='/js/scriptN.js'/>"></script> <!-- css 파일 교체함  -->
+<script src="<c:url value='/js/script.js'/>"></script> <!-- css 파일 교체함  -->
 <script src="<c:url value='/js/common.js'/>"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script> <!-- 쿠키 사용을 위해 추가 -->
 
@@ -48,9 +48,9 @@ $(document).ready(function() {
 	}
 });
 
-$(window).bind("beforeunload", function (e){
+/* $(window).bind("beforeunload", function (e){
 	opener.loadingOff();
-});
+}); */
 
 function search() {
 	
@@ -108,6 +108,37 @@ function inputFormSub() {
 	
 	inputForm.submit();
 }
+
+function fileDelete(realfile, servfile) {
+	if (!confirm("정말로 삭제하시겠습니까?")) {
+		return;
+	}	
+	
+	loadingOn();
+
+	$.ajax({
+         type : "POST",
+         url : "<c:url value='/gbn10/pg102000FileDelete.ajax' />",
+         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+         data : {"realfile":realfile, "servfile":servfile},	         
+         async: false,
+         success : function(data){
+        	 if(data != null) {
+        		var Ca = /\+/g;
+        	 	alert(decodeURIComponent(data.replace(Ca, " ")));
+        	 	console.log(data);
+        	 	document.inputForm.action = "<c:url value='/gbn10/pg102000Modify.do'/>";
+        		document.inputForm.submit();
+           		loadingOff();
+        	 }
+         },
+         error : function(XMLHttpRequest, textStatus, errorThrown){
+    		 var Ca = /\+/g;
+        	 alert(decodeURIComponent(XMLHttpRequest.responseText.replace(Ca, " ")));
+             loadingOff();
+         }
+     });
+}
 </script>
 
 </head>
@@ -142,7 +173,7 @@ function inputFormSub() {
                         </tr>
                     </tbody>
                 </table>
-                <form name="inputForm" id="inputFrom" action="<c:url value='/gbn10/pg102000Save.do' />" method="post">
+                <form name="inputForm" id="inputFrom" action="<c:url value='/gbn10/pg102000Save.do' />" method="post" enctype="multipart/form-data">
                 <table class="col_table m_b_20">
                     <colgroup>
                         <col style="width:15%">
@@ -248,7 +279,17 @@ function inputFormSub() {
                         <tr>
                             <th>첨부파일</th>
                             <td colspan="4">
-                                <label></label><input type="file" name="realfile" id="realfile" value="${pg102000Info.realfile}">
+                                <label></label>
+                                <c:choose>
+									<c:when test="${pg102000Info.realfile == null}">
+										<input type="file" name="realfile" id="realfile" value="${pg102000Info.realfile}">										
+									</c:when>
+									<c:otherwise>
+										<input type="text" name="realfile" id="realfile" value="${pg102000Info.realfile}" readonly>
+										<input type="text" name="servfile" id="servfile" value="${pg102000Info.servfile}" readonly>
+										<input type="button" id="fileRemove" value="삭제" onclick="javascript:fileDelete('${pg102000Info.realfile}', '${pg102000Info.servfile}');"> <br>								    	    	
+									</c:otherwise>
+								</c:choose>
                             </td>
                         </tr>
                     </tbody>

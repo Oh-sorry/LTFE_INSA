@@ -32,16 +32,12 @@
 $(document).ready(function() {
 	
 	if ($('#sStr').val() == "") {
-		$('#sStr').val(opener.document.getElementById("srcTxt").value);
-		document.searchForm.action = "<c:url value='/gbn10/pg102000Search.do'/>";
+		$('#sStr').val(opener.document.getElementById("sStr").value);
+		document.searchForm.action = "<c:url value='/gbn10/pg101000Search.do'/>";
 		document.searchForm.submit();
 	}
 	
 });
-
-/* $(window).bind("beforeunload", function (e){
-	opener.loadingOff();
-}); */
 
 function checkOnlyOne(element) {
 	
@@ -67,9 +63,6 @@ function selectData() {
 		if($(this).is(":checked")==true){		    	
 	    	var str = $(this).val().split(',');
 	    	
-	    	$('[id=inputForm] #pernNo').val(str[0]);
-	    	$('[id=inputForm] #name').val(str[1]);	
-	    	
 	    	opener.document.getElementById('pernNo').value = str[0];
 	    	opener.document.getElementById('name').value = str[1];
 	    	
@@ -83,76 +76,82 @@ function selectData() {
 	}
 
 	document.searchForm.submit();
+	/* opener.document.inputForm.submit(); */
+	opener.document.searchForm.submit();
 	self.close();
 }
 </script>
 
 </head>
 <body>
-	<form:form modelAttribute="pg102000Dto" id="searchForm" name="searchForm" method="post">	
+	<form:form modelAttribute="pg101000Dto" id="searchForm" name="searchForm" method="post">	
+		<input type="hidden" id="sStr" name="sStr" value="${searchFormData.sStr}"/>
 		<input type="hidden" id="pernNo" name="pernNo"/>
     	<input type="hidden" id="name" name="name"/>                
 		<div class="pop_warp">
 	        <div class="p_title">
-	            <h2>사번/성명 검색</h2>
+	            <h2>사원 검색 - ${cnt}명 검색 됨</h2>
 	            <p class="pop_down">
 	                <a href="javascript:self.close();" title="닫기" class="closeX"><img src="<c:url value='/images/pop_close.png' />" alt="닫기"></a>
 	            </p>
 	        </div>
 	        <div class="pop_content">
 	            <div class="pop_search_Area m_b_20">
-	                <div class="section">
-	                        <div class="cols_area">
-		                        <table class="col_table w_50_p m_b_10">
-		                        	<colgroup>
-		                        		<col style="width:15%">
-		                        		<col style="width:35%">
-		                        	</colgroup>
-					                <tbody>
-					                    <tr>
-					                        <th>사번/성명</th>
-					                        <td>
-					                            <label></label>
-					                            <form:input size="8" path="sStr" value="${searchFormData.sStr}" onkeypress="javascript:if(event.keyCode==13)goReload();"/>
-					                            <a href="javascript:goReload();" class="btn_small bt_grey">검색</a>
-					                        </td>
-					                    </tr>
-					                </tbody>
-					            </table>
-				                <div id="table-scroll" class="table-scroll" style="height:400px; margin:0;">
-		                            <table class="row_table">
-		                                <thead>
-		                                    <tr>
-		                                        <th></th>
-		                                        <th>성명</th>
-		                                        <th>사번</th>
-		                                    </tr>
-		                                </thead>
-		                                <tbody>
-		                                	<c:forEach var="result" items="${searchList}" varStatus="status">
-		                                		<tr>
-		                                			<td>
-		                                				<label></label>
-		                                				<input type="checkbox" id="check" name="check" onclick='checkOnlyOne(this)' value="${result.pernNo}, ${result.name}">
-		                                			</td>
-		                                			<td><c:out value="${result.name}" /></td>
-		                                			<td><c:out value="${result.pernNo}" /></td>
-		                                		</tr>
-		                                	</c:forEach>
-		                                </tbody>
-		                            </table>
-	                            </div>
-	                        </div>
-	                    </div>
-	            </div>
-	            <div class="btn_group">
-	                <div class="right">
-	                    <a href="javascript:selectData();" class="btn_large bt_blue">선택</a>
-	                    <a href="javascript:self.close();" class="btn_large bt_blue">닫기</a>
-	                </div>
-	            </div>
-	    	</div>
-		</div>
+	            	<div id="table-scroll" class="table-scroll" style="height:400px; margin:0;">
+	            		<table class="row_table">
+	            			<colgroup>
+	            				<col style="">
+					            <col style="width:10%">
+					            <col style="width:10%">
+					            <col style="">
+					            <col style="width:10%">
+					            <col style="width:10%">
+					            <col style="width:10%">
+					            <col style="width:10%">
+					            <col style="width:10%">
+					        </colgroup>
+		                    <thead>
+		                        <tr>
+		                            <th></th>
+		                            <th>사번</th>
+		                            <th>성명</th>
+		                            <th>주민등록번호</th>
+		                            <th>입사일자</th>
+		                            <th>퇴사일자</th>
+		                            <th>직위</th>
+		                            <th>직급</th>
+		                            <th>부서</th>
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                    	<c:forEach var="result" items="${searchList}" varStatus="status">
+		                    		<tr>
+		                    			<td>
+		                    				<label></label>
+		                    				<input type="checkbox" id="check" name="check" onclick='checkOnlyOne(this)' value="${result.pernNo}, ${result.name}">
+		                    			</td>
+		                    			<td><c:out value="${result.name}" /></td>
+		                    			<td><c:out value="${result.pernNo}" /></td>
+		                    			<td><c:out value="${result.repreNum}" /></td>
+		                    			<td><c:out value="${result.joinDate}" /></td>
+		                    			<td><c:out value="${result.retrDate}" /></td>
+		                    			<td><c:out value="${result.postCode}" /></td>
+		                    			<td><c:out value="${result.payGrade}" /></td>
+		                    			<td><c:out value="${result.deptName}" /></td>
+		                    		</tr>
+		                    	</c:forEach>
+		                    </tbody>
+                    	</table>
+                    </div>
+               </div>
+           	</div>
+        </div>
+        <div class="btn_group">
+            <div class="right">
+                <a href="javascript:selectData();" class="btn_large bt_blue">선택</a>
+                <a href="javascript:self.close();" class="btn_large bt_blue">닫기</a>
+            </div>
+        </div>
     </form:form>
 </body>
 </html>

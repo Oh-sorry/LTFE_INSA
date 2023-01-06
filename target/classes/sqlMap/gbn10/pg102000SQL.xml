@@ -92,24 +92,6 @@
 		WHERE  a.com_code                   = 'H058'
 		AND    a.detail_code_name IS NOT NULL;
 	</select>
-	
-	<!-- <select id="selectPg102000DayList1" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="com.mcst.dto.gbn10.pg102000Dto">
-		<![CDATA[
-		SELECT TO_CHAR(TO_DATE(${eduStartDate}, 'YYYYMM') + NUM - 1, 'YYYY-MM-DD') AS YYYYMMDD
-		FROM   (SELECT ROWNUM AS NUM
-		       FROM    DUAL CONNECT BY LEVEL <= ROUND(ADD_MONTHS(TO_DATE(${eduEndDate}, 'YYYYMM'), 1) - TO_DATE(${eduStartDate}, 'YYYYMM'))
-		       )
-		]]> 
-	</select>
-	
-	<select id="selectPg102000DayList2" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="com.mcst.dto.gbn10.pg102000Dto">
-		<![CDATA[
-		SELECT TO_CHAR(TO_DATE(${eduStartDate}, 'YYYYMMDD') + NUM - 1, 'YYYY-MM-DD') AS YYYYMMDD
-		FROM   (SELECT ROWNUM AS NUM
-		       FROM    DUAL CONNECT BY LEVEL <= ROUND(TO_DATE(${eduEndDate}, 'YYYYMMDD') + 1 - TO_DATE(${eduStartDate}, 'YYYYMMDD'))
-		       )
-		]]>
-	</select> -->
 
 	<select id="selectPg102000SearchList" parameterType="com.mcst.dto.gbn10.pg102000Dto" resultType="com.mcst.dto.gbn10.pg102000Dto">
 		SELECT A.PERN_NO, A.NAME
@@ -302,4 +284,12 @@
 				AND (lower(B.EDU_TITLE) LIKE '%' || lower(#{sTitle}) || '%' OR upper(B.EDU_TITLE) LIKE '%' || upper(#{sTitle}) || '%')
 			</if>
 	</select>
+	
+	<update id="updateFilePg102000" parameterType="com.mcst.dto.db.hte100tDto">
+		UPDATE hte100t a
+		SET    a.realfile = null,
+		       a.servfile = null
+		WHERE  a.servfile = #{servfile}
+	</update>
+	
 </mapper>

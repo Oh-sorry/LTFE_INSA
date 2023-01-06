@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pg101000Sql">
+
+	<select id="selectPg101000PernInfo" parameterType="com.mcst.dto.gbn10.pg101000Dto" resultType="com.mcst.dto.gbn10.pg101000Dto">
+		SELECT a.pern_no               AS pernNo,
+		       A.NAME                  AS name,
+		       aesdecrypt(a.repre_num) AS repreNum,
+		       a.sex_code              AS sexCode,
+		       a.join_date             AS joinDate,
+		       a.expire_date           AS expireDate,
+		       b.detail_code_name      AS postCode,
+		       a.pay_grade2            AS payGrade2,
+		       a.pay_grade_date        AS payGradeDate,
+		       a.pay_grade2_date       AS payGradeDate2,
+		       c.detail_code_name      AS payGrade,
+		       d.detail_code_name      AS salaryCode,
+		       FORMAT(a.wages_amt, 0)  AS wagesAmt,
+		       a.wages_date            AS wagesDate,
+		       e.detail_code_name      AS schshipCode,
+		       f.detail_code_name      AS deptName,
+		       FORMAT(IFNULL(
+		       CASE
+		              WHEN a.retr_date != ''
+		              THEN FLOOR((MONTHS_BETWEEN(TO_DATE(SUBSTR(a.retr_date,1,6), 'YYYYMM'), TO_DATE(SUBSTR(a.join_date,1,6), 'YYYYMM'))    + 1) / 12)
+		              ELSE FLOOR((MONTHS_BETWEEN(TO_DATE(TO_CHAR(SYSDATE, 'YYYYMM'), 'YYYYMM'), TO_DATE(SUBSTR(a.join_date,1,6), 'YYYYMM')) + 1) / 12)
+		       END                                                                                                                          +
+		       CASE
+		              WHEN k.ly IS NULL
+		              THEN 0
+		              ELSE k.ly
+		       END, '0'), 0) AS totalCarrYears,
+		       FORMAT(IFNULL(
+		       CASE
+		              WHEN a.retr_date != ''
+		              THEN MOD(MONTHS_BETWEEN(TO_DATE(SUBSTR(a.retr_date,1,6), 'YYYYMM'), TO_DATE(SUBSTR(a.join_date,1,6), 'YYYYMM'))    + 1, 12)
+		              ELSE MOD(MONTHS_BETWEEN(TO_DATE(TO_CHAR(SYSDATE, 'YYYYMM'), 'YYYYMM'), TO_DATE(SUBSTR(a.join_date,1,6), 'YYYYMM')) + 1, 12)
+		       END                                                                                                                       +
+		       CASE
+		              WHEN k.lm IS NULL
+		              THEN 0
+		              ELSE k.lm
+		       END, '0'), 0)                AS totalCarrMonths,
+		       FORMAT(IFNULL(k.ly, '0'), 0) AS pastCarrYears,
+		       FORMAT(IFNULL(k.lm, '0'), 0) AS pastCarrMonths,
+		       g.detail_code_name           AS joinCode,
+		       h.detail_code_name           AS employType,
+		       a.retr_date                  AS retrDate,
+		       i.detail_code_name           AS retrResn
+		FROM   hpa100t a,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H004'
+		       )
+		       b,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H005'
+		       )
+		       c,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H028'
+		       )
+		       d,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H009'
+		       )
+		       e,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H002'
+		       )
+		       f,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H012'
+		       )
+		       g,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H024'
+		       )
+		       h,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H023'
+		       )
+		       i,
+		       (SELECT  pern_no,
+		                MAX(schship_code) AS schship_code1
+		       FROM     hsc100t
+		       WHERE    schship_code NOT IN ('99')
+		       GROUP BY pern_no
+		       )
+		       j,
+		       (SELECT  pern_no,
+		                FLOOR(SUM(MONTHS_BETWEEN(TO_DATE(SUBSTR(carr_end_date,1,6), 'YYYYMM'), TO_DATE(SUBSTR(carr_strt_date,1,6), 'YYYYMM')) + 1) / 12) AS ly,
+		                MOD(SUM(MONTHS_BETWEEN(TO_DATE(SUBSTR(carr_end_date,1,6), 'YYYYMM'), TO_DATE(SUBSTR(carr_strt_date,1,6), 'YYYYMM'))   + 1),12)   AS lm
+		       FROM     hpd100t
+		       GROUP BY pern_no
+		       )
+		       k
+		WHERE  a.pay_grade     = b.detail_code (+)
+		AND    a.post_code     = c.detail_code (+)
+		AND    a.salary_code   = d.detail_code (+)
+		AND    a.pern_no       = j.pern_no (+)
+		AND    j.schship_code1 = e.detail_code (+)
+		AND    a.dept_code     = f.detail_code (+)
+		AND    a.join_code     = g.detail_code (+)
+		AND    a.employ_type   = h.detail_code (+)
+		AND    a.retr_resn     = i.detail_code (+)
+		AND    a.pern_no       = k.pern_no (+)
+		AND    a.pern_no = #{pernNo}
+	</select>
+
+	<select id="selectPg101000SearchList" parameterType="com.mcst.dto.gbn10.pg101000Dto" resultType="com.mcst.dto.gbn10.pg101000Dto">
+		SELECT a.pern_no,
+		       A.NAME,
+		       aesdecrypt(a.repre_num) AS repreNum,
+		       a.join_date,
+		       a.retr_date,
+		       b.detail_code_name AS deptName,
+		       c.detail_code_name AS postCode,
+		       d.detail_code_name AS payGrade
+		FROM   hpa100t a,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H002'
+		       )
+		       b,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H004'
+		       )
+		       c,
+		       (SELECT detail_code_name,
+		               detail_code
+		       FROM    bco100t
+		       WHERE   com_code = 'H005'
+		       )
+		       d
+		WHERE  1 = 1
+		AND    a.dept_code = b.detail_code (+)
+		AND    a.pay_grade = c.detail_code (+)
+		AND    a.post_code = d.detail_code (+)
+		AND    (A.NAME LIKE '%' || #{sStr} || '%' OR A.PERN_NO LIKE '%' || #{sStr} || '%')
+	</select>
+
+
+</mapper>

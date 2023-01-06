@@ -49,7 +49,7 @@ public class pg104500Controller {
 	protected static Logger logger = Logger.getLogger(Main.class.getName());
 
 	@RequestMapping(value = "/gbn10/pg104500.do", method = { RequestMethod.GET, RequestMethod.POST })
-	public String pg104500(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletRequest request, HttpServletResponse reponse, HttpSession session, ModelMap model) throws Exception {
+	public String pg104500(@ModelAttribute("pg104500Dto") pg104500Dto pg104500Dto, HttpServletRequest request, HttpServletResponse response, HttpSession session, ModelMap model) throws Exception {
 		/* 재/퇴직 */
 		List<pg104500Dto> pg104500DtoGbnJoinList = pg104500Service.selectPg104500GbnJoinList(pg104500Dto);
 		/* 부서 */

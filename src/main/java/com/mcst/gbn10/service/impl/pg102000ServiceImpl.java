@@ -48,24 +48,11 @@ public class pg102000ServiceImpl extends EgovAbstractServiceImpl implements pg10
 		return pg102000Dao.deletePg102000(pg102000Dto);
 	}
 	
-	
 	public List<Map<String, Object>> excelList(pg102000Dto pg102000Dto) throws Exception {
 		return pg102000Dao.excelList(pg102000Dto);
 	}
 
-	
-	
-	
-
-	/*
-	 * @Override public List<pg102000Dto> selectPg102000DayList1(pg102000Dto
-	 * pg102000Dto) throws Exception { return
-	 * pg102000Dao.selectPg102000DayList1(pg102000Dto); }
-	 * 
-	 * @Override public List<pg102000Dto> selectPg102000DayList2(pg102000Dto
-	 * pg102000Dto) throws Exception { return
-	 * pg102000Dao.selectPg102000DayList2(pg102000Dto); }
-	 */
-	
-	
+	public int updateFilePg102000(hte100tDto hte100tDto) throws Exception {
+		return pg102000Dao.updateFilePg102000(hte100tDto);
+	}
 }
