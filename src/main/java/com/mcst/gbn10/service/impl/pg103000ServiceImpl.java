@@ -49,4 +49,12 @@ public class pg103000ServiceImpl extends EgovAbstractServiceImpl implements pg10
 	public List<pg103000Dto> selectPg103000SearchList(pg103000Dto pg103000Dto) throws Exception {
 		return pg103000Dao.selectPg103000SearchList(pg103000Dto);
 	}
+	
+	public pg103000Dto selectPg103000Info(pg103000Dto pg103000Dto) throws Exception {
+		return pg103000Dao.selectPg103000Info(pg103000Dto);
+	}
+	
+	public int deletePg103000(pg103000Dto pg103000Dto) throws Exception {
+		return pg103000Dao.deletePg103000(pg103000Dto);
+	}
 }

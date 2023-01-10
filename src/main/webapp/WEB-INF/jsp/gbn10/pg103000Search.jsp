@@ -32,6 +32,12 @@ $(document).ready(function() {
 		$('#sStr').val(opener.document.getElementById("srcTxt").value);
 		document.searchForm.action = "<c:url value='/gbn10/pg103000Search.do'/>";
 		document.searchForm.submit();
+		
+		
+		if($("input:checkbox[name='check']:checked").length == 1) {
+			cnt = 1;
+			selectData();
+		}
 	} 
 });
 
@@ -45,7 +51,72 @@ function goReload() {
 	document.searchForm.submit();		
 }
 
-
+function selectData() {
+	
+	var form = document.searchForm;
+	var ChBox = $('[name="check"]');
+	var cnt = 0;
+	for(i=0;i<ChBox.length;i++){
+		if(ChBox[i].checked == true){
+			cnt++;
+		}			
+	}
+	if(cnt == 0){
+		alert("항목을 선택해 주십시오.");
+		return;
+	}else if(cnt > 1){
+		alert("항목을 하나만 선택해 주십시오.");
+		return;
+	}
+	
+	var sb = $('[id="s_bun"]');
+	var pern_no = 0;
+	for(i=0;i<ChBox.length;i++){
+		if(ChBox[i].checked == true){
+			pern_no=sb[i].outerText;
+			break;
+		}
+	}
+	
+	$('input:checkbox[name=check]').each(function (index) {
+		if($(this).is(":checked") == true) {
+			var str = $(this).val().split('.');
+			
+			$('[id=inputForm] #pernNo').val(str[0]);
+			$('[id=inputForm] #usrname').val(str[1]);
+			$('[id=inputForm] #usrrepreNum').val(str[2]);
+			
+			if(str[4] == null || str[4] == ' ') {
+				$('[id=inputForm] #workPeriod1').val(str[3] + ' ~ 현재');
+				opener.document.getElementById('workPeriod1').value = str[3] + ' ~ 현재';
+			} else {
+				$('[id=inputForm] #workPeriod1').val(str[3] + ' ~ ' + str[4]);
+				opener.document.getElementById('workPeriod1').value = str[3] + ' ~ ' + str[4];
+			}
+			$('[id=inputForm] #usrfield1').val('직     위');
+			$('[id=inputForm] #usrfield2').val(str[5]);
+			$('[id=inputForm] #usrbirth').val(str[6]);
+			$('[id=inputForm] #usraddr').val(str[7]);
+			
+			opener.document.getElementById('pernNo').value = str[0];
+			opener.document.getElementById('usrname').value = str[1];
+			opener.document.getElementById('usrrepreNum').value = str[2];
+			opener.document.getElementById('usrfield1').value = '직     위';
+			opener.document.getElementById('usrfield2').value = str[5];
+			opener.document.getElementById('usrbirth').value = str[6];
+			opener.document.getElementById('usraddr').value = str[7];
+			
+			checked = true;
+		}
+	});
+	
+	if(checked == false) {
+		alert("사용할 데이터를 선택하세요");
+		return;
+	}
+	document.searchForm.submit();
+	self.close();
+}
 </script>
 
 </head>
@@ -53,9 +124,10 @@ function goReload() {
 	<form:form modelAttribute="pg103000Dto" id="searchForm" name="searchForm" method="post">	
 		<input type="hidden" id="pernNo" name="pernNo"/>
     	<input type="hidden" id="usrname" name="usrname"/>
-    	<input type="hidden" id="usrrepreNum" name="usrrepreNum"/>     
+    	<input type="hidden" id="usrrepreNum" name="usrrepreNum"/>
+    	<input type="hidden" id="usrfield2" name="usrfield2"/>
     	<input type="hidden" id="usraddr" name="usraddr"/>     
-    	<input type="hidden" id="usrbirth" name="usrbirth"/>     
+    	<input type="hidden" id="usrbirth" name="usrbirth"/>
     	
 		<div class="pop_warp">
 	        <div class="p_title">
@@ -104,10 +176,10 @@ function goReload() {
 		                                		<tr>
 		                                			<td>
 		                                				<label></label>
-		                                				<input type="checkbox" id="check" name="check" onclick='checkOnlyOne(this)' value="${result.pernNo}, ${result.usrname}">
+		                                				<input type="checkbox" id="check" name="check" onclick='checkOnlyOne(this)' value="${result.pernNo}.${result.usrname}.${result.usrrepreNum}.${result.joinDate}.${result.retrDate}.${result.postName}.${result.usrbirth}.${result.usraddr}" checked>
 		                                			</td>
 		                                			<td><c:out value="${result.usrname}" /></td>
-		                                			<td><c:out value="${result.pernNo}" /></td>
+		                                			<td id="s_bun"><c:out value="${result.pernNo}" /></td>
 		                                			<td><c:out value="${result.usrrepreNum}" /></td>
 		                                			<td><c:out value="${result.joinDate}" /></td>
 		                                			<td><c:out value="${result.retrDate}" /></td>
@@ -124,7 +196,7 @@ function goReload() {
 	            </div>
 	            <div class="btn_group">
 	                <div class="right">
-	                    <a href="javascript:inputFormSub()" class="btn_large bt_blue">선택</a>
+	                    <a href="javascript:selectData();" class="btn_large bt_blue">선택</a>
 	                    <a href="javascript:self.close();" class="btn_large bt_blue">닫기</a>
 	                </div>
 	            </div>

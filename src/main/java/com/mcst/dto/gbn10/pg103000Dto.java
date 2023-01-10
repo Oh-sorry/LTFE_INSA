@@ -49,12 +49,12 @@ public class pg103000Dto implements Serializable {
 	private String expStartDate; 	//신청일 시작
 	private String expEndDate;		//신청일 종료
 	
-	private int pageIndex = 0;					//현재페이지
-	private int pageUnit = 10;					//페이지갯수
+	private int pageIndex = 1;					//현재페이지
+	private int pageUnit = 16;					//페이지갯수
 	private int pageSize = 10;					//페이지사이즈
-	private int firstIndex = 1;					//firstIndex
+	private int firstIndex = 0;					//firstIndex
 	private int lastIndex = 1;					//lastIndex
-	private int recordCountPerPage = 12;		//recordCountPerPage
+	private int recordCountPerPage = 16;		//recordCountPerPage
 	private int totCnt = 0;				    	//총갯수
 	private int startDate = 0;			    	//시작데이터
 	private int endDate = 0;					//종료데이터

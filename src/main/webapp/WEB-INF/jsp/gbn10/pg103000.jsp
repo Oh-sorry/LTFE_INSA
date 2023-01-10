@@ -30,6 +30,22 @@
 
 <script language="javascript">
 
+function checkOnlyOne(element) {
+	
+	if(element.checked == false) {
+		element.checked = false; 
+		return;
+	}
+	
+	const checkboxes = document.getElementsByName("check");
+
+	checkboxes.forEach((cb) => {
+		cb.checked = false;
+	})
+	
+	element.checked = true;
+}
+
 /* 검색 기능 */
 function goReload() {
 	if($('[id=listForm] #expStartDate').val().trim() != '') {
@@ -47,6 +63,7 @@ function goReload() {
 		}
 	}
 }
+
 function goSelect() {
 	document.listForm.action = "<c:url value='/gbn10/pg103000.do'/>";
 	document.listForm.submit();
@@ -66,22 +83,21 @@ function goSelect() {
 function fn_go_page(pageNo) {
 	$("#pageIndex").val(pageNo);
 	$("#listForm").submit();
-	return false;
 }
 
 function chkAll(obj){
 	var form = document.listForm;
-	var len = document.getElementsByName("Check");
+	var len = document.getElementsByName("check");
 	
 	for(i=0;i<len.length;i++){
-		document.getElementsByName("Check")[i].checked = obj.checked;
+		document.getElementsByName("check")[i].checked = obj.checked;
 	}
 }
 
 function showPop() {
 	
 	var form = document.listForm;
-	var ChBox = $('[name="Check"]');
+	var ChBox = $('[name="check"]');
 	var cnt = 0;
 	for(i=0;i<ChBox.length;i++){
 		if(ChBox[i].checked == true){
@@ -122,7 +138,7 @@ function showPop() {
 	}, 250);
 }
 
-function write() {
+function goWrite() {
 	loadingOn();
 	
 	pops = window.open('about:blank', 'input', 'width=800px,height=725px,top=0,left=0,toolbar=no,status=no,menubar=no,location=no,scrollbars=yes');
@@ -139,6 +155,101 @@ function write() {
 		}		
 	}, 250);
 }
+
+function goModify() {
+	var checked = false;
+	
+	$('input:checkbox[name=check]').each(function (index) {
+		if($(this).is(":checked")==true) {
+	    	var str = $(this).val().split(',');
+	    	
+	    	$('[id=inputForm] #pernNo').val(str[0]);
+	    	$('[id=inputForm] #seq').val(str[1]);		    	
+	    	
+	    	checked = true;
+		}
+	});
+
+	if(checked == false) {
+		alert("수정할 데이터를 선택하세요");
+		return;
+	}
+	
+	loadingOn();
+
+	popup = window.open('about:blank','input','width=800px,height=725px,top=0,left=0,toolbar=no,status=no,menubar=no,location=no,scrollbars=yes')
+	$('#inputForm').attr("action", "<c:url value='/gbn10/pg103000Modify.do'/>");
+	$('#inputForm').attr("target", "input");
+	inputForm.submit();
+	
+	POPUP_INTERVAL = setInterval(function() {
+		console.log(1);
+		if(typeof(popup)=='undefined' || popup.closed) {
+			clearInterval(POPUP_INTERVAL);
+			goReload();
+			loadingOff();
+		}		
+	}, 250);
+}
+
+function goDelete() {
+	var checked = false;
+	
+	$('input:checkbox[name=check]').each(function (index) {
+		if($(this).is(":checked")==true) {
+	    	var str = $(this).val().split(',');
+	    	
+	    	$('[id=inputForm] #pernNo').val(str[0]);
+	    	$('[id=inputForm] #seq').val(str[1]);		    	
+	    	
+	    	checked = true;
+		}
+	});
+
+	if(checked == false) {
+		alert("삭제할 데이터를 선택하세요");
+		return;
+	}
+	if (!confirm("정말로 삭제하시겠습니까?")) {
+		return;
+	}
+	
+	var pernNo = $('[id=inputForm] #pernNo').val();
+	var seq = $('[id=inputForm] #seq').val();
+	
+	loadingOn();
+	
+	$.ajax({
+		type : "POST",
+		url : "<c:url value='/gbn10/pg103000Delete.ajax' />",
+		contentType : 'application/x-www-form-urlencoded; charset=UTF-8',
+		data : {"pernNo" : pernNo, "seq" : seq},
+		async : false,
+		success : function(data) {
+			if(data !=null) {
+				var Ca = /\+/g;
+        	 	alert(decodeURIComponent(data.replace(Ca, " ")));
+        	 	console.log(data);
+             	goReload();
+           		loadingOff();
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown){
+   		 var Ca = /\+/g;
+       	 alert(decodeURIComponent(XMLHttpRequest.responseText.replace(Ca, " ")));
+            loadingOff();
+        }
+	});
+}
+
+//사번/성명 자동완성
+
+$( function() {
+	setSearchNameAutoComplete("pernNo");
+});
+function goSearchNameAfterSelect() {
+	goReload();
+};
 
 </script>
 
@@ -163,12 +274,8 @@ function write() {
 					<h3>증명서 발급</h3>
 					<div class="search_Area m_b_20">
                         <dl>
-                            <dt>성명</dt>
-                            <dd> <input type="text" id="usrname" name="usrname"></dd>
-                        </dl>
-                        <dl>
-                            <dt>사번</dt>
-                            <dd> <input type="text" id="pernNo" name="pernNo"></dd>
+                            <dt>성명/사번</dt>
+                            <dd> <input type="text" id="pernNo" name="pernNo" value="${searchFormData.pernNo}"></dd>
                         </dl>
 							<dl>
 								<dt>부서</dt>
@@ -240,7 +347,7 @@ function write() {
                                 <tbody>
                                 	<c:forEach var="result" items="${pernList}" varStatus="status">
 	                                    <tr>
-	                                        <td><input type="checkbox" id="Check" name="Check" value=""></td>
+	                                        <td><input type="checkbox" id="check" name="check" onclick='checkOnlyOne(this)' value="${result.pernNo},${result.seq}"></td>
 	                                        <td><c:out value="${result.expDate}"/></td>
 	                                        <td id="s_bun"><c:out value="${result.pernNo}"/></td>
 	                                        <td><c:out value="${result.usrname}"/></td>
@@ -263,22 +370,24 @@ function write() {
 							<!-- To.DO 수정해야함  -->
 								<div class="paging" id="paging">
 									<c:if test="${pg103000Dto.prev}">
-										<a href="javascript:void(0);" onclick="fn_go_page(${pg103000Dto.startDate - 1}); return false;" >◀</a>
+										<a href="javascript:void(0);" onclick="fn_go_page(${pg103000Dto.startDate - 1});" >◀</a>
 									</c:if>
 									<c:forEach var="num" begin="${pg103000Dto.startDate}" end="${pg103000Dto.endDate}">
-										<a href="javascript:void(0);" onclick="fn_go_page(${num}); return false;" class="num${num}" title="${num}">${num}</a>
+										<a href="javascript:void(0);" onclick="fn_go_page(${num});" class="num${num}" title="${num}">${num}</a>
 									</c:forEach>
 									<c:if test="${pg103000Dto.next}">
-										<a href="javascript:void(0);"  onclick="fn_go_page(${pg103000Dto.endDate + 1}); return false;" >▶</a>
+										<a href="javascript:void(0);" onclick="fn_go_page(${pg103000Dto.endDate + 1});" >▶</a>
 									</c:if>
 									<form:hidden path="pageIndex" id="pageIndex" val=""/>
+									<form:hidden path="firstIndex" id="firstIndex" val=""/>
+									<form:hidden path="lastIndex" id="lastIndex" val=""/>
 								</div>
 							</div>
 							<div class="right">
 								<a href="javascript:showPop();" class="btn_large bt_grey">사원정보</a>
-								<a href="javascript:write();" class="btn_large bt_grey">증명서신청/등록</a>
-								<a href="javascript:del();" class="btn_large bt_grey">삭제</a>
-								<a href="javascript:view();" class="btn_large bt_grey">수정</a>
+								<a href="javascript:goWrite();" class="btn_large bt_grey">증명서신청/등록</a>
+								<a href="javascript:goDelete();" class="btn_large bt_grey">삭제</a>
+								<a href="javascript:goModify();" class="btn_large bt_grey">수정</a>
 								<select>
 									<option>직인</option>
 									<option>직인 제거</option>
@@ -296,7 +405,7 @@ function write() {
 							</div>
 						</div>
 					</form:form>			
-					<span>총게시물 ${totCnt} / 페이지 (${pg103000Dto.pageIndex} / ${totalPageCnt}) / 시작/끝 (${pg103000Dto.startDate} / ${pg103000Dto.endDate})</span>
+					<span>총게시물 ${totCnt} / 페이지 (${pg103000Dto.pageIndex} / ${totalPageCnt}) / 시작/끝 (${pg103000Dto.startDate} / ${pg103000Dto.endDate}) / firstIndex (${pg103000Dto.firstIndex}) / currentpage (${paginationInfo.currentPageNo})</span>
 				</div>
 				<jsp:include page="/WEB-INF/jsp/bottom.jsp" flush="true" />
 			</div>

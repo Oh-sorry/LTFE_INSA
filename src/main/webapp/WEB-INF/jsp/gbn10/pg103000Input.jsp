@@ -82,7 +82,7 @@ function inputFormSub() {
 		$('#hanDate').focus();
 		return;
 	}
-	if($('#certGbn').val() == ""){
+	if($('#certGbn').val() == "0"){
 		alert('증명구분을 선택하십시오.');
 		$('#certGbn').focus();
 		return;
@@ -92,7 +92,7 @@ function inputFormSub() {
 		$('#expCnt').focus();
 		return;
 	}
-	if($('#expResn').val() == ""){
+	if($('#expResn').val() == "0"){
 		alert('신청사유를 선택하십시오.');
 		$('#expResn').focus();
 		return;
@@ -104,6 +104,16 @@ function inputFormSub() {
 	
 	inputForm.submit();
 }
+
+//사번/성명 자동완성
+
+$( function() {
+	setSearchNameAutoComplete("srcTxt");
+});
+function goSearchNameAfterSelect() {
+	search();
+};
+
 </script>
 
 </head>
@@ -123,25 +133,25 @@ function inputFormSub() {
 				<table class="col_table w_60_p m_b_10">
 					<colgroup>
 						<col style="width: 20%">
-						<col style="width: 10%">
-						<col style="width: 20%">
-						<col style="width: 60%">
+						<col style="width: 80%">
 					</colgroup>
 					<tbody>
 						<tr>
-							<th>퇴직포함</th>
-							<td><input type="checkbox" id="srcCheck" name="srcCheck" class="input"></td>
+							<!-- <th>퇴직포함</th>
+							<td><input type="checkbox" id="srcCheck" name="srcCheck" class="input"></td> -->
 							<th>성명/사번</th>
 							<td>
-								<input type="text" size="15" id="srcTxt" name="srcTxt" onkeypress="javascript:if(event.keyCode==13)search();">
-								<a href="javascript:search();" class="btn_small bt_grey">검색</a>
 								<input type="hidden" name="sPernNo">
 								<input type="hidden" name="sName">
+								<input type="text" size="15" id="srcTxt" name="srcTxt" onkeypress="javascript:if(event.keyCode==13)search();">
+								<a href="javascript:search();" class="btn_small bt_grey">검색</a>
+								
 							</td>
 						</tr>
 					</tbody>
 				</table>
 				<form name="inputForm" id="inputFrom" action="<c:url value='/gbn10/pg103000Save.do' />" method="post"  enctype="multipart/form-data">
+					<input type="hidden" name="seq" id="seq" value="${pg103000Info.seq}">
 					<table class="col_table m_b_20">
 						<colgroup>
 							<col style="width: 15%">
@@ -152,67 +162,66 @@ function inputFormSub() {
 						<tbody>
 							<tr>
 								<th>성명</th>
-								<td><input type="text" id="usrname" name="usrname"></td>
+								<td><input type="text" id="usrname" name="usrname" value="${pg103000Info.usrname}" readOnly></td>
 								<th>사번</th>
-								<td><input type="text" id="pernNo" name="pernNo"></td>
+								<td><input type="text" id="pernNo" name="pernNo" value="${pg103000Info.pernNo}" readOnly></td>
 							</tr>
 							<tr>
 								<th>신청일</th>
-								<td><input type="date" id="expDate" name="expDate"></td>
+								<td><input type="date" id="expDate" name="expDate" value="${pg103000Info.expDate}"></td>
 								<th>처리일</th>
-								<td><input type="date" id="hanDate" name="hanDate"></td>
+								<td><input type="date" id="hanDate" name="hanDate" value="${pg103000Info.hanDate}"></td>
 							</tr>
 							<tr>
 								<th>증명구분</th>
 								<td colspan="3">
-									<select name="certGbn" class="input">
+									<select id="certGbn" name="certGbn" class="input">
 											<!-- value 값 추후 수정 -->
-											<option value="">선택</option>
-											<option value="1">신입</option>
-											<option value="2">경력</option>
+											<option value="0" <c:if test="${pg103000Info.certGbn == '0'}">selected="selected"</c:if>>선택</option>
+											<option value="1" <c:if test="${pg103000Info.certGbn == '1'}">selected="selected"</c:if>>신입</option>
+											<option value="2" <c:if test="${pg103000Info.certGbn == '2'}">selected="selected"</c:if>>경력</option>
 									</select>
 								</td>
 							</tr>
 							<tr>
 								<th>신청통수</th>
-								<td colspan="3"><input type="text" id="expCnt" name="expCnt"></td>
+								<td colspan="3"><input type="text" id="expCnt" name="expCnt" value="${pg103000Info.expCnt}"></td>
 							</tr>
 							<tr>
 								<th>주민등록번호</th>
-								<td colspan="3"><input type="text" id="usrrepreNum" name="usrrepreNum"></td>
+								<td colspan="3"><input type="text" id="usrrepreNum" name="usrrepreNum" value="${pg103000Info.usrrepreNum}" readOnly></td>
 							</tr>
 							<tr>
 								<th>재직기간</th>
 								<td colspan="3">
-									1. <input type="text" id="workPeriod1" name="workPeriod1"> <br> 
-									2. <input type="text" id="workPeriod2" name="workPeriod2"> <br>
-									3. <input type="text" id="workPeriod3" name="workPeriod3"> <br>
+									1. <input type="text" id="workPeriod1" name="workPeriod1" value="${pg103000Info.workPeriod1}"> <br> 
+									2. <input type="text" id="workPeriod2" name="workPeriod2" value="${pg103000Info.workPeriod2}"> <br>
+									3. <input type="text" id="workPeriod3" name="workPeriod3" value="${pg103000Info.workPeriod3}"> <br>
 								</td>
 							</tr>
 							<tr>
-								<th><input type="text" id="usrfield1" name="usrfield1" class="input"></th>
-								<td colspan="3"><input type="text" id="usrfield2" name="usrfield2"></td>
+								<th><input type="text" id="usrfield1" name="usrfield1" class="input" value="${pg103000Info.usrfield1}"></th>
+								<td colspan="3"><input type="text" id="usrfield2" name="usrfield2" value="${pg103000Info.usrfield2}"></td>
 							</tr>
 							<tr>
 								<th>신청사유</th>
 								<td colspan="3">
-									<select name="expResn" class="input">
-											<!-- value 값 추후 수정 -->
-											<option value="">선택</option>
-											<option value="타업체 제출용">타업체 제출용</option>
-											<option value="은행제출용">은행제출용</option>
-											<option value="교육기관 제출용">교육기관 제출용</option>
-											<option value="기타">기타</option>
+									<select id="expResn" name="expResn" class="input">
+											<option value="0" <c:if test="${pg103000Info.expResn == '0'}">selected="selected"</c:if>>선택</option>
+											<option value="타업체 제출용" <c:if test="${pg103000Info.expResn == '타업체 제출용'}">selected="selected"</c:if>>타업체 제출용</option>
+											<option value="은행제출용" <c:if test="${pg103000Info.expResn == '은행제출용'}">selected="selected"</c:if>>은행제출용</option>
+											<option value="교육기관 제출용" <c:if test="${pg103000Info.expResn == '교육기관 제출용'}">selected="selected"</c:if>>교육기관 제출용</option>
+											<option value="기타" <c:if test="${pg103000Info.expResn == '기타'}">selected="selected"</c:if>>기타</option>
 									</select>
 								</td>
 							</tr>
 							<tr>
 								<th>주소</th>
-								<td colspan="3"><input type="text" id="usraddr" name="usraddr"></td>
+								<td colspan="3"><input type="text" id="usraddr" name="usraddr" value="${pg103000Info.usraddr}" style="width:600px;" readOnly></td>
 							</tr>
 							<tr>
 								<th>생년월일</th>
-								<td colspan="3"><input type="text" id="usrbirth" name="usrbirth"></td>
+								<td colspan="3"><input type="text" id="usrbirth" name="usrbirth" value="${pg103000Info.usrbirth}" style="width:600px;" readOnly></td>
 							</tr>
 						</tbody>
 					</table>

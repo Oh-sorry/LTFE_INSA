@@ -42,4 +42,12 @@ public class pg103000Dao extends EgovAbstractMapper {
 	public List<pg103000Dto> selectPg103000SearchList(pg103000Dto pg103000Dto) {
 		return selectList("pg103000SQL.selectPg103000SearchList", pg103000Dto);
 	}
+
+	public pg103000Dto selectPg103000Info(pg103000Dto pg103000Dto) {
+		return selectOne("pg103000SQL.selectPg103000Info", pg103000Dto);
+	}
+
+	public int deletePg103000(pg103000Dto pg103000Dto) {
+		return delete("pg103000SQL.deletePg103000", pg103000Dto);
+	}
 }

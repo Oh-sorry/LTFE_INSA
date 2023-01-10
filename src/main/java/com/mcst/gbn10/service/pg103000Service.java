@@ -23,4 +23,8 @@ public interface pg103000Service {
 
 	public List<pg103000Dto> selectPg103000SearchList(pg103000Dto pg103000Dto) throws Exception;
 
+	public pg103000Dto selectPg103000Info(pg103000Dto pg103000Dto) throws Exception;
+
+	public int deletePg103000(pg103000Dto pg103000Dto) throws Exception;
+
 }

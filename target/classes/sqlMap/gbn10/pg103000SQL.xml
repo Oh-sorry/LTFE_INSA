@@ -40,30 +40,40 @@
 	</select>
 	
 	<select id="selectPg103000List" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="com.mcst.dto.gbn10.pg103000Dto">
-		SELECT b.exp_date,
-		       b.pern_no,
-		       b.usrname,
-		       b.usrrepre_num,
-		       a.join_date,
-		       a.retr_date,
-		       a.dept_code,
-		       a.dept_name,
-		       b.cert_gbn,
-		       b.exp_resn,
-		       b.exp_cnt,
-		       b.han_date,
-		       b.seq
-		FROM   hpa100t a,
-		       hzz140t b
-		WHERE  a.pern_no = b.pern_no (+)
-		AND    b.pern_no IS NOT NULL
-		
-		<if test="usrname != null and usrname !=''">
-			AND b.usrname LIKE '%' || #{usrname} || '%'
-		</if>
+		SELECT   b.exp_date,
+		         b.pern_no,
+		         b.usrname,
+		         b.usrrepre_num,
+		         a.join_date,
+		         a.retr_date,
+		         a.dept_code,
+		         a.dept_name,
+		         b.cert_gbn,
+		         b.exp_resn,
+		         b.exp_cnt,
+		         b.han_date,
+		         b.work_period1,
+		         b.work_period2,
+		         b.work_period3,
+		         a.post_code,
+		         c.detail_code_name AS post_name,
+		         a.kor_addr,
+		         b.usrbirth,
+		         b.seq
+		FROM     hpa100t a,
+		         hzz140t b,
+		         (SELECT DETAIL_CODE,
+		                 detail_code_name
+		         FROM    bco100t
+		         WHERE   com_code = 'H005'
+		         )
+		         c
+		WHERE    a.pern_no           = b.pern_no (+)
+		AND      a.post_code         = c.DETAIL_CODE (+)
+		AND      b.pern_no IS NOT NULL
 		
 		<if test="pernNo != null and pernNo !=''">
-			AND b.pern_no LIKE '%' || #{pernNo} || '%'
+			AND (b.pern_no LIKE '%' || #{pernNo} || '%' OR b.usrname LIKE '%' || #{pernNo} || '%')
 		</if>
 		
 		<if test="deptCode != null and deptCode !=''">
@@ -78,7 +88,7 @@
 			AND (b.exp_date BETWEEN REPLACE(#{expStartDate}, '-', '') AND REPLACE(#{expEndDate}, '-', '') OR b.exp_date BETWEEN REPLACE(#{expStartDate}, '-', '') AND REPLACE(#{expEndDate}, '-', ''))
 		</if>
 		ORDER BY b.exp_date DESC
-		LIMIT #{recordCountPerPage} OFFSET #{pageIndex}
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
 		
 	</select>
 
@@ -88,11 +98,25 @@
 				hzz140t b
 		WHERE   a.pern_no = b.pern_no (+)
 		AND		b.pern_no IS NOT NULL
+		<if test="pernNo != null and pernNo !=''">
+			AND (b.pern_no LIKE '%' || #{pernNo} || '%' OR b.usrname LIKE '%' || #{pernNo} || '%')
+		</if>
+		<if test="deptCode != null and deptCode !=''">
+			AND (SUBSTR(a.dept_code, 0, 2) = #{deptCode} OR a.dept_code = #{deptCode})
+		</if>
+		
+		<if test="certGbn != null and certGbn !=''">
+			AND b.cert_gbn = #{certGbn}
+		</if>
+		
+		<if test="expStartDate != null and expStartDate != '' and expEndDate != null and expEndDate != ''">
+			AND (b.exp_date BETWEEN REPLACE(#{expStartDate}, '-', '') AND REPLACE(#{expEndDate}, '-', '') OR b.exp_date BETWEEN REPLACE(#{expStartDate}, '-', '') AND REPLACE(#{expEndDate}, '-', ''))
+		</if>
 	</select>
 
-	<select id="selectPg102000Check" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="java.lang.Integer">
+	<select id="selectPg103000Check" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="java.lang.Integer">
 		SELECT COUNT(1) CNT
-		FROM   hte100t
+		FROM   hzz140t
 		WHERE  pern_no = #{pernNo}
 		AND    seq     = #{seq}
 	</select>
@@ -172,7 +196,7 @@
 		       d.detail_code_name AS pay_name,
 		       b.DETAIL_CODE      AS dept_code,
 		       a.dept_name,
-		       a.birt_date,
+		       a.birt_date AS usrbirth,
 		       a.kor_addr AS usraddr
 		FROM   hpa100t a,
 		       (SELECT DETAIL_CODE,
@@ -202,4 +226,32 @@
 		ORDER BY a.pern_no
 	</select>
 
+	<select id="selectPg103000Info" parameterType="com.mcst.dto.gbn10.pg103000Dto" resultType="com.mcst.dto.gbn10.pg103000Dto">
+		SELECT a.pern_no,
+		       a.seq,
+		       a.usrname,
+		       a.exp_date,
+		       a.han_date,
+		       a.cert_gbn,
+		       a.exp_cnt,
+		       a.usrrepre_num,
+		       a.work_period1,
+		       a.work_period2,
+		       a.work_period3,
+		       a.usrfield1,
+		       a.usrfield2,
+		       a.exp_resn,
+		       a.usraddr,
+		       a.usrbirth
+		FROM   hzz140t a
+		WHERE  A.PERN_NO = #{pernNo}
+		AND    A.SEQ     = #{seq}
+	</select>
+
+	<delete id="deletePg103000" parameterType="com.mcst.dto.gbn10.pg103000Dto">
+		DELETE
+		FROM   hzz140t
+		WHERE  pern_no = ${pernNo}
+		AND    seq     = ${seq}
+	</delete>
 </mapper>

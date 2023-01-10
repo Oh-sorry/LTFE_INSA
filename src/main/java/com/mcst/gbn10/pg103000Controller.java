@@ -1,5 +1,8 @@
 package com.mcst.gbn10;
 
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +17,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.batch.Main;
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -56,6 +61,40 @@ public class pg103000Controller {
 		Cookie cookie = new Cookie("fileDownloadToken", "TRUE");
 		response.addCookie(cookie);
 		
+		/* 부서 검색 */
+		List<pg103000Dto> pg103000DtoDeptList1 = pg103000Service.selectPg103000DetpList1(pg103000Dto);
+		List<pg103000Dto> pg103000DtoDeptList2 = pg103000Service.selectPg103000DetpList2(pg103000Dto);
+		
+		/* 증명구분 검색 */
+		List<pg103000Dto> pg103000DtoCertGbn = pg103000Service.selectPg103000CertGbn(pg103000Dto);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map result = objectMapper.convertValue(pg103000Dto, Map.class);
+		
+		/* 페이징 */
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(pg103000Dto.getPageIndex()); //1
+		paginationInfo.setRecordCountPerPage(pg103000Dto.getPageUnit()); //10
+		paginationInfo.setPageSize(pg103000Dto.getPageSize()); //10
+		
+		/* 전체 게시글 수 확인 */
+		int totCnt = pg103000Service.pageListCnt(pg103000Dto);
+		paginationInfo.setTotalRecordCount(totCnt);
+		
+		pg103000Dto.setFirstIndex(paginationInfo.getFirstRecordIndex()); 
+		pg103000Dto.setLastIndex(paginationInfo.getLastRecordIndex()); 
+		pg103000Dto.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+		
+		/* 뒤로/앞으로 버튼 */
+		pg103000Dto.setStartDate(paginationInfo.getFirstPageNoOnPageList());
+		int end = paginationInfo.getFirstPageNoOnPageList() + pg103000Dto.getPageSize()-1;
+		pg103000Dto.setEndDate(end);
+		int realEnd = (int)(Math.ceil((paginationInfo.getTotalRecordCount() * 1.0)/ (double)pg103000Dto.getPageUnit()));
+		boolean xprev = pg103000Dto.getStartDate() > 1;
+		boolean xnext = pg103000Dto.getEndDate() < realEnd;
+		pg103000Dto.setPrev(xprev);
+		pg103000Dto.setNext(xnext);
+		
 		List<pg103000Dto> pg103000DtoList = pg103000Service.selectPg103000List(pg103000Dto);
 		
 		for(int i=0; i<pg103000DtoList.size(); i++) {
@@ -87,40 +126,6 @@ public class pg103000Controller {
 			}
 			
 		}
-		/* 부서 검색 */
-		List<pg103000Dto> pg103000DtoDeptList1 = pg103000Service.selectPg103000DetpList1(pg103000Dto);
-		List<pg103000Dto> pg103000DtoDeptList2 = pg103000Service.selectPg103000DetpList2(pg103000Dto);
-		
-		/* 증명구분 검색 */
-		List<pg103000Dto> pg103000DtoCertGbn = pg103000Service.selectPg103000CertGbn(pg103000Dto);
-
-		ObjectMapper objectMapper = new ObjectMapper();
-		Map result = objectMapper.convertValue(pg103000Dto, Map.class);
-		
-		/* 페이징 */
-		PaginationInfo paginationInfo = new PaginationInfo();
-		paginationInfo.setCurrentPageNo(pg103000Dto.getPageIndex()); //1
-		paginationInfo.setRecordCountPerPage(pg103000Dto.getPageUnit()); //10
-		paginationInfo.setPageSize(pg103000Dto.getPageSize()); //10
-		
-		/* 전체 게시글 수 확인 */
-		int totCnt = pg103000Service.pageListCnt(pg103000Dto);
-		paginationInfo.setTotalRecordCount(totCnt);
-		
-		pg103000Dto.setFirstIndex(paginationInfo.getFirstRecordIndex());
-		pg103000Dto.setLastIndex(paginationInfo.getLastRecordIndex());
-		pg103000Dto.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
-		
-		/* 뒤로/앞으로 버튼 */
-		pg103000Dto.setStartDate(paginationInfo.getFirstPageNoOnPageList());
-		int end = paginationInfo.getFirstPageNoOnPageList() + pg103000Dto.getPageSize() - 1;
-		pg103000Dto.setEndDate(end);
-		int realEnd = (int)(Math.ceil((paginationInfo.getTotalRecordCount() * 1.0)/ (double)pg103000Dto.getPageUnit()));
-		boolean xprev = pg103000Dto.getStartDate() > 1;
-		boolean xnext = pg103000Dto.getEndDate() < realEnd;
-		pg103000Dto.setPrev(xprev);
-		pg103000Dto.setNext(xnext);
-		
 		
 		model.addAttribute("searchFormData", result);
 		model.addAttribute("pernList", pg103000DtoList);
@@ -174,6 +179,11 @@ public class pg103000Controller {
 		
 		BeanUtils.copyProperties(hzz140tDto, pg103000Dto);
 		
+		hzz140tDto.setUsrname(AES128.encrypt(pg103000Dto.getUsrname()));
+		hzz140tDto.setUsrrepreNum(AES128.encrypt(pg103000Dto.getUsrrepreNum()));
+		hzz140tDto.setUsrbirth(AES128.encrypt(pg103000Dto.getUsrbirth()));
+		hzz140tDto.setUsraddr(AES128.encrypt(pg103000Dto.getUsraddr()));
+		
 		if (dupChk > 0) {
 			msg = "이미 입력된 정보가 존재합니다.";
 		} else {
@@ -202,6 +212,13 @@ public class pg103000Controller {
 		for(int i=0; i<pg103000DtoSearchList.size(); i++) {
 			/*주민번호 decode -> '-'처리*/
 			pg103000DtoSearchList.get(i).setUsrrepreNum(stringUtil.repreNum(AES128.decrypt(pg103000DtoSearchList.get(i).getUsrrepreNum())));
+			
+			/* 사원 주소 */
+			pg103000DtoSearchList.get(i).setUsraddr(AES128.decrypt(pg103000DtoSearchList.get(i).getUsraddr()));
+			
+			/* 사원 생년월일 */
+			pg103000DtoSearchList.get(i).setUsrbirth(dateUtil.formatDate((AES128.decrypt(pg103000DtoSearchList.get(i).getUsrbirth())), '-'));
+			
 		}
 		
 		model.addAttribute("searchList", pg103000DtoSearchList);
@@ -211,6 +228,52 @@ public class pg103000Controller {
 		model.addAttribute("searchFormData", result);
 		
 		return "gbn10/pg103000Search";
+	}
+	
+	@RequestMapping(value = "/gbn10/pg103000Modify.do", method = { RequestMethod.GET, RequestMethod.POST })
+	public String pg103000Modify(@ModelAttribute("pg103000Dto") pg103000Dto pg103000Dto, ModelMap model) throws Exception {
+		
+		model.addAttribute("processType","UPDATE");
+		
+		pg103000Dto pg103000DtoInfo = pg103000Service.selectPg103000Info(pg103000Dto);
+		
+		/* 사원 성명 */
+		pg103000DtoInfo.setUsrname(AES128.decrypt(pg103000DtoInfo.getUsrname()));
+		/* 주민번호 */
+		pg103000DtoInfo.setUsrrepreNum(stringUtil.repreNum(AES128.decrypt(pg103000DtoInfo.getUsrrepreNum())));
+		/*주소*/
+		pg103000DtoInfo.setUsraddr(AES128.decrypt(pg103000DtoInfo.getUsraddr()));
+		/* 생년월일 */
+		pg103000DtoInfo.setUsrbirth(AES128.decrypt(pg103000DtoInfo.getUsrbirth()));
+		
+		/* 신청일/처리일 */
+		pg103000DtoInfo.setExpDate(dateUtil.formatDate((pg103000DtoInfo.getExpDate()), '-'));
+		pg103000DtoInfo.setHanDate(dateUtil.formatDate((pg103000DtoInfo.getHanDate()), '-'));
+		
+		model.addAttribute("pg103000Info", pg103000DtoInfo);
+		
+		return "gbn10/pg103000Input";
+	}
+
+	@RequestMapping(value = "/gbn10/pg103000Delete.ajax", method={RequestMethod.POST})
+	public ResponseEntity<String> pg103000Delete(@ModelAttribute("pg103000Dto") pg103000Dto pg103000Dto, HttpSession session, ModelMap model) throws Exception {
+		
+		int rtn =0;
+		ResponseEntity<String> resRtn = null;
+		
+		rtn = pg103000Service.deletePg103000(pg103000Dto);
+		
+		if (rtn == 1) {
+   			resRtn = new ResponseEntity<>(URLEncoder.encode("정상적으로 삭제 되었습니다." , "UTF-8"),HttpStatus.OK);
+
+   			logger.info(resRtn);
+   		} else {
+   			resRtn = new ResponseEntity<>(URLEncoder.encode("삭제 처리중 오류가 발생되었습니다." , "UTF-8"),HttpStatus.BAD_REQUEST);
+
+   			logger.info(resRtn);
+   		}
+		
+		return resRtn;
 	}
 	
 }

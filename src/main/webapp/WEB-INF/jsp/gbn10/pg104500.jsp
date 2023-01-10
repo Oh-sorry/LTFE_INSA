@@ -14,14 +14,14 @@
 <link rel="stylesheet" href="<c:url value='/css/jquery-ui.min.css'/>" />
 <link rel="stylesheet" href="<c:url value='/jqgrid/css/ui.jqgrid.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/reset.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/newStyle_back.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/style.css'/>">
 <%-- <link rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>"> --%>
 <script src="<c:url value='/js/jquery.min.js'/>"></script>
 <script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script src="<c:url value='/jqgrid/jquery.jqgrid.src.js'/>"></script>
 <script src="<c:url value='/jqgrid/i18n/grid.locale-kr.js'/>"></script>
 <script src="<c:url value='/js/loadingoverlay.min.js'/>"></script>
-<script src="<c:url value='/js/newScript_back.js'/>"></script>
+<script src="<c:url value='/js/script.js'/>"></script>
 <script src="<c:url value='/js/common.js'/>"></script>
 
 <title>(주)엠씨에스텍 인사급여시스템</title>
@@ -41,39 +41,8 @@ function goExcel() {
 
 }
 
-//사번/성명 자동완성 ??
-var setSearchNameAutoComplete = function() {
-    var getId = arguments;
+//사번/성명 자동완성
 
-	var hostIndex = location.href.indexOf(location.host) + location.host.length;
-	var ajaxUrl = location.href.substring(hostIndex, location.href.indexOf('/',hostIndex + 1));
-
-	$( "#"+getId[0] ).autocomplete({
-      source: function(request, response) {
-    	  $.ajax({
-    		  type : "get",
-    		  url: ajaxUrl+"/nameSearch.ajax",
-    		  data : {"joinGubun": "T", "searchName": $("#"+getId[0]).val()},
-              success : function(data) {
-                  response(
-                      $.map(data.resultList, function(item) {
-                    	  return {
-                              label : item.NAME,
-                              value : item.PERN_NO
-                          }
-                      })
-                  );
-              }
-    	  });
-      },
-      minLength: 1,
-      autoFocus : true,
-      select : function(event, ui) {
-    	  $("#"+getId[0]).val(ui.item.value)
-    	  goSearchNameAfterSelect();
-      }
-    });
-  };
 $( function() {
 	setSearchNameAutoComplete("pernNo");
 });
@@ -185,6 +154,8 @@ function goSearchNameAfterSelect() {
 	                                        <td>
 	                                        	<label></label>
 	                                        	<input type="text" id="pernNo" name="pernNo" value="${searchFormData.pernNo}">
+	                                        </td>
+	                                        <td>
 	                                        	<a href="javascript:goReload()" class="btn_small bt_grey">검색</a>
 	                                        </td>
 	                                    </tr>
@@ -192,7 +163,7 @@ function goSearchNameAfterSelect() {
 	                            </table>
 	                        </div>
 							<div class="section">
-	                        	<div id="table-scroll" class="table-scroll" style="height:577px; margin:0;">
+	                        	<div id="table-scroll" class="table-scroll" style="height:450px; margin:0;">
 									<table class="row_table">
 										<thead>
 											<tr>
